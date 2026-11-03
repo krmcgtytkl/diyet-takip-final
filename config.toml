@@ -1,0 +1,10 @@
+[theme]
+base="dark"
+primaryColor="#007AFF"            # iOS mavi rengi
+backgroundColor="#000000"         # Tam siyah arka plan
+secondaryBackgroundColor="#1C1C1E" # iOS kart rengi
+textColor="#FFFFFF"               # Beyaz yazı
+font="sans serif"
+
+[server]
+headless = true
