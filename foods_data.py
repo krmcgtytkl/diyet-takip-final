@@ -1,61 +1,47 @@
-import base64
-import json
-import requests
-import os
-
-# API anahtarını Streamlit Secrets'tan veya ortam değişkeninden güvenli bir şekilde oku
-try:
-    import streamlit as st
-    GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
-except:
-    GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
-
-def analyze_food_image(image_bytes: bytes) -> dict:
-    """Yemek fotoğrafını Groq API ile analiz eder, kalori ve makro tahmini döndürür."""
-    if not GROQ_API_KEY:
-        return {"error": "API anahtarı bulunamadı. Lütfen Streamlit Secrets ayarlarını kontrol edin."}
-
-    # Görseli base64 formatına çevir
-    b64_image = base64.b64encode(image_bytes).decode("utf-8")
-    
-    url = "https://api.groq.com/openai/v1/chat/completions"
-    headers = {
-        "Authorization": f"Bearer {GROQ_API_KEY}",
-        "Content-Type": "application/json"
-    }
-    
-    payload = {
-        "model": "qwen/qwen3.8-27b",  # Groq'un güncel görsel modeli
-        "messages": [
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "text",
-                        "text": "Bu bir yemek fotoğrafı. Lütfen şu adımları izle: 1. Yemeğin adını belirle. 2. Tabaktaki porsiyonun ne kadar büyük olduğunu tahmin et (küçük, orta, büyük). 3. Bu bilgilere göre gerçekçi bir kalori ve makro tahmini yap. Sadece şu JSON formatında cevap ver: {\"food_name\": \"yemek adı\", \"portion_size\": \"küçük/orta/büyük\", \"calories\": 250, \"protein_g\": 10, \"carbs_g\": 30, \"fat_g\": 15}"
-                    },
-                    {
-                        "type": "image_url",
-                        "image_url": {
-                            "url": f"data:image/jpeg;base64,{b64_image}"
-                        }
-                    }
-                ]
-            }
-        ],
-        "max_tokens": 300,
-        "temperature": 0.2
-    }
-    
-    try:
-        response = requests.post(url, headers=headers, json=payload, timeout=30)
-        response.raise_for_status()
-        result = response.json()
-        content = result["choices"][0]["message"]["content"]
-        
-        # JSON formatını temizle
-        content = content.replace("```json", "").replace("```", "").strip()
-        data = json.loads(content)
-        return data
-    except Exception as e:
-        return {"error": f"Analiz hatası: {e}"}
+# Türk mutfağından popüler yemekler ve ortalama besin değerleri (1 porsiyon)
+FOOD_DATABASE = {
+    "Menemen": {"cal": 250, "pro": 15, "carb": 10, "fat": 18},
+    "Mercimek Çorbası": {"cal": 180, "pro": 9, "carb": 25, "fat": 5},
+    "Karnıyarık": {"cal": 350, "pro": 15, "carb": 20, "fat": 22},
+    "Tavuk Göğsü (Izgara)": {"cal": 165, "pro": 31, "carb": 0, "fat": 3.6},
+    "Bulgur Pilavı": {"cal": 220, "pro": 6, "carb": 45, "fat": 2},
+    "Pirinç Pilavı": {"cal": 280, "pro": 5, "carb": 55, "fat": 6},
+    "Yoğurt (1 Kase)": {"cal": 100, "pro": 6, "carb": 8, "fat": 5},
+    "Yumurta (Haşlanmış)": {"cal": 78, "pro": 6, "carb": 1, "fat": 5},
+    "Tam Buğday Ekmeği (1 Dilim)": {"cal": 80, "pro": 4, "carb": 14, "fat": 1},
+    "Beyaz Peynir (1 Dilim)": {"cal": 75, "pro": 5, "carb": 1, "fat": 6},
+    "Zeytin (10 Adet)": {"cal": 60, "pro": 0, "carb": 2, "fat": 6},
+    "Kuru Fasulye": {"cal": 300, "pro": 15, "carb": 40, "fat": 8},
+    "İmam Bayıldı": {"cal": 200, "pro": 3, "carb": 15, "fat": 14},
+    "Etli Nohut": {"cal": 380, "pro": 20, "carb": 35, "fat": 18},
+    "Mantı (Yoğurtlu)": {"cal": 450, "pro": 18, "carb": 55, "fat": 16},
+    "Çiğ Köfte (1 Adet)": {"cal": 60, "pro": 1, "carb": 10, "fat": 2},
+    "Elma (Orta)": {"cal": 95, "pro": 0.5, "carb": 25, "fat": 0.3},
+    "Muz (Orta)": {"cal": 105, "pro": 1, "carb": 27, "fat": 0.4},
+    "Badem (10 Adet)": {"cal": 70, "pro": 3, "carb": 3, "fat": 6},
+    "Ceviz (2 Adet)": {"cal": 100, "pro": 2, "carb": 2, "fat": 10},
+    "Tavuk Şiş": {"cal": 250, "pro": 30, "carb": 5, "fat": 12},
+    "Köfte (Izgara, 4 Adet)": {"cal": 300, "pro": 20, "carb": 10, "fat": 20},
+    "Çoban Salata": {"cal": 80, "pro": 2, "carb": 8, "fat": 4},
+    "Süt (1 Bardak)": {"cal": 120, "pro": 8, "carb": 12, "fat": 5},
+    "Çay (Şekersiz)": {"cal": 2, "pro": 0, "carb": 0.5, "fat": 0},
+    # --- ABUR CUBUR ---
+    "Cips (1 Küçük Paket)": {"cal": 274, "pro": 3, "carb": 28, "fat": 17},
+    "Çikolata (Sütlü, 1 Adet)": {"cal": 235, "pro": 3, "carb": 26, "fat": 13},
+    "Bisküvi (Büyük Boy, 1 Paket)": {"cal": 250, "pro": 4, "carb": 35, "fat": 10},
+    "Kola (1 Kutu, 330ml)": {"cal": 139, "pro": 0, "carb": 35, "fat": 0},
+    "Dondurma (1 Top)": {"cal": 137, "pro": 2, "carb": 16, "fat": 7},
+    "Lokum (2 Adet)": {"cal": 100, "pro": 0, "carb": 25, "fat": 0},
+    "Baklava (1 Dilim)": {"cal": 330, "pro": 5, "carb": 40, "fat": 17},
+    "Kraker (1 Paket)": {"cal": 130, "pro": 2, "carb": 20, "fat": 5},
+    "Gofret (1 Adet)": {"cal": 120, "pro": 2, "carb": 15, "fat": 6},
+    "Meyveli Soda (1 Kutu)": {"cal": 45, "pro": 0, "carb": 11, "fat": 0},
+    # --- KAHVALTILIKLAR ---
+    "Kaşar Peyniri (1 Dilim)": {"cal": 90, "pro": 6, "carb": 0.5, "fat": 7},
+    "Omlet (2 Yumurta)": {"cal": 180, "pro": 12, "carb": 2, "fat": 14},
+    "Beyaz Ekmek (1 Dilim)": {"cal": 70, "pro": 2, "carb": 14, "fat": 1},
+    "Tereyağı (1 Tatlı Kaşığı)": {"cal": 35, "pro": 0, "carb": 0, "fat": 4},
+    "Bal (1 Tatlı Kaşığı)": {"cal": 20, "pro": 0, "carb": 5, "fat": 0},
+    "Reçel (1 Tatlı Kaşığı)": {"cal": 15, "pro": 0, "carb": 4, "fat": 0},
+    "Türk Kahvesi (Şekersiz)": {"cal": 5, "pro": 0, "carb": 1, "fat": 0}
+}
