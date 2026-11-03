@@ -41,7 +41,7 @@ st.markdown("""
         transform: scale(1.02);
     }
     
-   /* Giriş kutuları (input) */
+    /* Giriş kutuları (input) */
     .stTextInput>div>div>input, .stNumberInput>div>div>input, .stSelectbox>div>div>select {
         border-radius: 10px;
         border: 1px solid #C7C7CC;
@@ -69,6 +69,7 @@ st.markdown("""
     div[data-testid="stMetricValue"] {
         color: #000000 !important; 
         font-weight: 700;
+    }
     }
     
     /* Sekmeler (iOS segmented control görünümü) */
@@ -213,7 +214,7 @@ def show_home(user):
     # --- SOL MENÜ (SIDEBAR) ---
     with st.sidebar:
         st.title(f"👋 {user['display_name']}")
-        st.caption(f"@{user['username']}")
+        st.sidebar.caption("Geliştirici: Kerim Çağatay Toklu")
         st.divider()
         st.metric("🎯 Günlük Kalori Hedefi", f"{user['daily_calorie_target'] or '—'} kcal")
         st.divider()
@@ -396,6 +397,11 @@ def show_home(user):
     # --- 2. SU TAKİBİ ---
     with tab_water:
         st.subheader("💧 Su Tüketimi")
+        
+        # YENİ EKLENEN KISIM: Su içmeyi unuttuysa uyarı ver
+        if water_ml == 0:
+            st.toast("💧 Bugün henüz su içmedin! Hadi bir bardak iç.", icon="🚨")
+        
         st.write(f"Bugün toplam **{water_ml} ml** su içtiniz. (Hedef: ~2000 ml)")
         
         su_orani = min(1.0, water_ml / 2000.0)
@@ -647,6 +653,16 @@ def show_home(user):
         else:
             st.info("Henüz hiç ölçü kaydı yok. '📏 Ölçüler' sekmesinden ekleyebilirsiniz.")
 
+    # --- ALT BİLGİ (FOOTER) ---
+    st.markdown("---")
+    st.markdown(
+        """
+        <div style='text-align: center; color: #8E8E93; font-size: 12px; padding-bottom: 20px;'>
+            🥗 <b>Diyet Takip</b> | Geliştirici: <b>Kerim Çağatay Toklu</b> (@kct)
+        </div>
+        """, 
+        unsafe_allow_html=True
+    )
 # Ana akış
 user = st.session_state.user
 if user is None:
