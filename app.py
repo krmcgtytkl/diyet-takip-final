@@ -8,7 +8,7 @@ from calories import calorie_target
 from foods_data import FOOD_DATABASE
 
 # --- SAYFA AYARLARI VE HAFIZA ---
-st.set_page_config(page_title="KCTFİT", page_icon="🥗", layout="centered")
+st.set_page_config(page_title="KCTFit", page_icon="🥗", layout="centered")
 
 # Session state başlangıç değerleri
 if "user" not in st.session_state:
@@ -129,8 +129,9 @@ def get_combined_foods(user_id):
     return foods
 
 def show_login_page():
-    st.title("🥗 KCTFİT")
-    st.markdown("### *Sağlıklı yaşam burada başlıyor by kct...*")
+    st.title("🥗 KCTFit")
+    st.markdown("### *Sağlıklı yaşam burada başlıyor...*")
+    st.caption("👨‍💻 Geliştirici: **Kerim Çağatay Toklu** | 📱 KCTFIT v1.0")
     tab1, tab2 = st.tabs(["Giriş Yap", "Kayıt Ol"])
     
     with tab1:
@@ -214,11 +215,12 @@ def show_home(user):
     # --- SOL MENÜ (SIDEBAR) ---
     with st.sidebar:
         st.title(f"👋 {user['display_name']}")
-        st.sidebar.caption("Geliştirici: Kerim Çağatay Toklu")
+        st.caption(f"@{user['username']}")
         st.divider()
         st.metric("🎯 Günlük Kalori Hedefi", f"{user['daily_calorie_target'] or '—'} kcal")
         st.divider()
         
+        # 1. Sık Kullanılan İşlemler
         if st.button("⚙️ Profili Düzenle", use_container_width=True):
             st.session_state.show_profile = True
             st.rerun()
@@ -227,38 +229,88 @@ def show_home(user):
             st.session_state.user = None
             st.rerun()
             
+        # 2. Tehlikeli Bölge (Gizli/Açılır Menü İçinde)
+        st.divider()
+        with st.expander("🛠️ Hesap ve Veri Yönetimi"):
+            st.caption("Dikkat! Buradaki işlemler geri alınamaz.")
+            
+            with st.expander("🗑️ Veri Temizleme"):
+                if st.button("Bugünkü Tüm Verileri Sil", use_container_width=True):
+                    meal_mod.clear_today_data(user["id"])
+                    st.success("Bugünkü veriler başarıyla silindi!")
+                    st.rerun()
+                    
+                if st.button("TÜM Geçmişi Sil", type="primary", use_container_width=True):
+                    meal_mod.clear_all_data(user["id"])
+                    st.warning("Tüm geçmiş verileriniz silindi! Hesabınız duruyor.")
+                    st.rerun()
+                    
+            with st.expander("⚠️ Hesabımı Sil"):
+                st.warning("Dikkat! Bu işlem geri alınamaz. Tüm verileriniz ve hesabınız kalıcı olarak silinir.")
+                onay = st.checkbox("Hesabımı kalıcı olarak silmek istiyorum.")
+                
+                if st.button("Hesabı Sil", type="primary", use_container_width=True, disabled=not onay):
+                    meal_mod.delete_user_account(user["id"])
+                    st.session_state.user = None
+                    st.success("Hesabınız ve tüm verileriniz silindi.")
+                    st.rerun()
+  
+
+
+    # Eğer profil düzenleme modu açıksa, sadece profil ekranını göster ve çık
+    if st.session_state.show_profile:
+        show_profile_setup(user)
+        return
+def show_home(user):
+    # --- SOL MENÜ (SIDEBAR) ---
+    with st.sidebar:
+        st.title(f"👋 {user['display_name']}")
+        st.caption(f"@{user['username']}")
+        st.divider()
+        st.metric("🎯 Günlük Kalori Hedefi", f"{user['daily_calorie_target'] or '—'} kcal")
         st.divider()
         
-        with st.expander("⚠️ Hesabımı Sil"):
-            st.warning("Dikkat! Bu işlem geri alınamaz. Tüm verileriniz ve hesabınız kalıcı olarak silinir.")
-            onay = st.checkbox("Hesabımı kalıcı olarak silmek istiyorum.")
+        # 1. Sık Kullanılan İşlemler
+        if st.button("⚙️ Profili Düzenle", use_container_width=True):
+            st.session_state.show_profile = True
+            st.rerun()
             
-            # Buton, expander'ın İÇİNDE ve onay kutusuna bağlı
-            if st.button("Hesabı Sil", type="primary", use_container_width=True, disabled=not onay):
-                meal_mod.delete_user_account(user["id"])
-                st.session_state.user = None
-                st.success("Hesabınız ve tüm verileriniz silindi.")
-                st.rerun()            
-        # --- YENİ EKLENEN: VERİ TEMİZLEME BUTONLARI ---
+        if st.button("🚪 Çıkış Yap", use_container_width=True):
+            st.session_state.user = None
+            st.rerun()
+            
+        # 2. Tehlikeli Bölge (Gizli/Açılır Menü İçinde)
         st.divider()
-        with st.expander("🗑️ Veri Temizleme"):
-            st.write("Yanlış girdiğiniz verileri buradan silebilirsiniz.")
+        with st.expander("🛠️ Hesap ve Veri Yönetimi"):
+            st.caption("Dikkat! Buradaki işlemler geri alınamaz.")
             
-            if st.button("Bugünkü Tüm Verileri Sil", use_container_width=True):
-                meal_mod.clear_today_data(user["id"])
-                st.success("Bugünkü veriler başarıyla silindi!")
-                st.rerun()
+            with st.expander("🗑️ Veri Temizleme"):
+                if st.button("Bugünkü Tüm Verileri Sil", use_container_width=True):
+                    meal_mod.clear_today_data(user["id"])
+                    st.success("Bugünkü veriler başarıyla silindi!")
+                    st.rerun()
+                    
+                if st.button("TÜM Geçmişi Sil", type="primary", use_container_width=True):
+                    meal_mod.clear_all_data(user["id"])
+                    st.warning("Tüm geçmiş verileriniz silindi! Hesabınız duruyor.")
+                    st.rerun()
+                    
+            with st.expander("⚠️ Hesabımı Sil"):
+                st.warning("Dikkat! Bu işlem geri alınamaz. Tüm verileriniz ve hesabınız kalıcı olarak silinir.")
+                onay = st.checkbox("Hesabımı kalıcı olarak silmek istiyorum.")
                 
-            if st.button("TÜM Geçmişi Sil", type="primary", use_container_width=True):
-                meal_mod.clear_all_data(user["id"])
-                st.warning("Tüm geçmiş verileriniz silindi! Hesabınız duruyor.")
-                st.rerun()
+                if st.button("Hesabı Sil", type="primary", use_container_width=True, disabled=not onay):
+                    meal_mod.delete_user_account(user["id"])
+                    st.session_state.user = None
+                    st.success("Hesabınız ve tüm verileriniz silindi.")
+                    st.rerun()
 
     # Eğer profil düzenleme modu açıksa, sadece profil ekranını göster ve çık
     if st.session_state.show_profile:
         show_profile_setup(user)
         return
 
+    # --- ANA SAYFA İÇERİĞİ ---
     # --- ANA SAYFA İÇERİĞİ ---
     st.title("🥗 Bugünkü Özet")
     
@@ -658,7 +710,7 @@ def show_home(user):
     st.markdown(
         """
         <div style='text-align: center; color: #8E8E93; font-size: 12px; padding-bottom: 20px;'>
-            🥗 <b>KCTFİT</b> | Geliştirici: <b>Kerim Çağatay Toklu</b> (@kct)
+            🥗 <b>KCTFit</b> | Geliştirici: <b>Kerim Çağatay Toklu</b> (@kct)
         </div>
         """, 
         unsafe_allow_html=True
