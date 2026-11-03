@@ -8,7 +8,7 @@ from calories import calorie_target
 from foods_data import FOOD_DATABASE
 
 # --- SAYFA AYARLARI VE HAFIZA ---
-st.set_page_config(page_title="Diyet Takip", page_icon="🥗", layout="centered")
+st.set_page_config(page_title="KCTFİT", page_icon="🥗", layout="centered")
 
 # Session state başlangıç değerleri
 if "user" not in st.session_state:
@@ -129,7 +129,7 @@ def get_combined_foods(user_id):
     return foods
 
 def show_login_page():
-    st.title("🥗 Diyet Takip")
+    st.title("🥗 KCTFİT")
     st.markdown("### *Sağlıklı yaşam burada başlıyor by kct...*")
     tab1, tab2 = st.tabs(["Giriş Yap", "Kayıt Ol"])
     
@@ -658,7 +658,7 @@ def show_home(user):
     st.markdown(
         """
         <div style='text-align: center; color: #8E8E93; font-size: 12px; padding-bottom: 20px;'>
-            🥗 <b>Diyet Takip</b> | Geliştirici: <b>Kerim Çağatay Toklu</b> (@kct)
+            🥗 <b>KCTFİT</b> | Geliştirici: <b>Kerim Çağatay Toklu</b> (@kct)
         </div>
         """, 
         unsafe_allow_html=True
