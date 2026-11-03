@@ -28,7 +28,7 @@ def analyze_food_image(image_bytes: bytes) -> dict:
                 "content": [
                     {
                         "type": "text", 
-                        "text": "Bu bir yemek fotoğrafı. Sadece şu JSON formatında cevap ver, başka hiçbir şey yazma: {\"food_name\": \"yemek adı\", \"calories\": 250, \"protein_g\": 10, \"carbs_g\": 30, \"fat_g\": 15}"
+                        "text": "Bu bir yemek fotoğrafı. Lütfen aşağıdaki adımları kesinlikle uygula:\n1. Yemeğin adını belirle.\n2. Tabaktaki porsiyonun ne kadar büyük olduğunu tahmin et (küçük, orta, büyük).\n3. Bu porsiyon boyutuna göre GERÇEKÇİ bir kalori ve makro tahmini yap. Sakın ortalama bir değer verme, fotoğraftaki tabağın boyutunu ve yemek miktarını dikkate al.\nSadece şu JSON formatında cevap ver: {\"food_name\": \"yemek adı\", \"portion_size\": \"küçük/orta/büyük\", \"calories\": 250, \"protein_g\": 10, \"carbs_g\": 30, \"fat_g\": 15}"
                     },
                     {
                         "type": "image_url", 
