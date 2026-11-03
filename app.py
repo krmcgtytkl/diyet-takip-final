@@ -50,12 +50,25 @@ st.markdown("""
         padding: 10px;
     }
     
-    /* Metrik kartları (iOS kart görünümü) */
+    /* Metrik kartları (Bembeyaz iOS kart görünümü) */
     div[data-testid="stMetric"] {
-        background-color: #1C1C1E;
+        background-color: #FFFFFF !important; /* Arka planı bembeyaz yaptık */
         border-radius: 16px;
         padding: 15px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* Gölgeyi hafiflettik */
+        border: 1px solid #E5E5EA; /* İnce bir gri çerçeve ekledik */
+    }
+    
+    /* Kart içindeki yazılar (Alınan, Yakılan, vs.) koyu gri olsun */
+    div[data-testid="stMetricLabel"] {
+        color: #8E8E93 !important; 
+        font-weight: 600;
+    }
+    
+    /* Kart içindeki büyük rakamlar (0 kcal vs.) simsiyah olsun */
+    div[data-testid="stMetricValue"] {
+        color: #000000 !important; 
+        font-weight: 700;
     }
     
     /* Sekmeler (iOS segmented control görünümü) */
