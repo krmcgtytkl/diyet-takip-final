@@ -41,12 +41,12 @@ st.markdown("""
         transform: scale(1.02);
     }
     
-    /* Giriş kutuları (input) */
+   /* Giriş kutuları (input) */
     .stTextInput>div>div>input, .stNumberInput>div>div>input, .stSelectbox>div>div>select {
         border-radius: 10px;
-        border: 1px solid #3A3A3C;
-        background-color: #1C1C1E;
-        color: white;
+        border: 1px solid #C7C7CC;
+        background-color: #FFFFFF !important;
+        color: #000000 !important;
         padding: 10px;
     }
     
