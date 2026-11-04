@@ -8,9 +8,20 @@ from database import init_db
 from calories import calorie_target
 from foods_data import FOOD_DATABASE
 import streamlit.components.v1 as components
+from streamlit_cookies_manager import EncryptedCookieManager
+import os
 
 # --- SAYFA AYARLARI VE HAFIZA ---
 st.set_page_config(page_title="KCTFIT", page_icon="🥗", layout="wide")
+
+# Çerez yöneticisini başlat (oturum kalıcılığı için)
+cookies = EncryptedCookieManager(
+    prefix="kctfit/",
+    password=os.environ.get("COOKIES_PASSWORD", "KCTFIT-Gizli-Sifre-123")
+)
+
+if not cookies.ready():
+    st.stop()
 
 # Session state başlangıç değerleri
 if "user" not in st.session_state:
@@ -232,6 +243,9 @@ def show_login_page():
             user = auth.login(username, password)
             if user:
                 st.session_state.user = dict(user)
+                # Kullanıcı adını çereze kaydet (oturum kalıcılığı için)
+                cookies["username"] = user['username']
+                cookies.save()  # Çerezi hemen kaydet
                 karsilama = random.choice(KARSILAMA_CUMLELERI).format(isim=user['display_name'])
                 st.session_state.karsilama_mesaji = karsilama
                 st.rerun()
@@ -810,6 +824,14 @@ def show_home(user):
         else:
             st.info("Henüz hiç ölçü kaydı yok. '📏 Ölçüler' sekmesinden ekleyebilirsiniz.")
 
+# Çerezde kayıtlı kullanıcı adı varsa otomatik giriş yap
+if "user" not in st.session_state or st.session_state.user is None:
+    saved_username = cookies.get("username")
+    if saved_username:
+        user_from_cookie = auth.login_with_username(saved_username)
+        if user_from_cookie:
+            st.session_state.user = dict(user_from_cookie)
+            st.rerun()
 
 # Ana akış
 user = st.session_state.user
