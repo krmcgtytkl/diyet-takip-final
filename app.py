@@ -112,41 +112,41 @@ st.markdown("""
     .stTabs [data-baseweb="tab-highlight"] {
         display: none;
     }
-        /* --- ÖZEL METRİK KART RENKLERİ --- */
+            /* --- ÖZEL METRİK KART RENKLERİ (KESİN ÇÖZÜM) --- */
     
-    /* Alınan (Turuncu) */
-    div[data-testid="stMetric"]:nth-child(1) {
+    /* 1. Kart: Alınan (Turuncu) */
+    div[data-testid="stHorizontalBlock"] > div:nth-child(1) div[data-testid="stMetric"] {
         background-color: #FFF3E0 !important;
         border: 1px solid #FFCC80 !important;
     }
-    div[data-testid="stMetric"]:nth-child(1) div[data-testid="stMetricValue"] {
+    div[data-testid="stHorizontalBlock"] > div:nth-child(1) div[data-testid="stMetricValue"] {
         color: #E65100 !important;
     }
 
-    /* Yakılan (Yeşil) */
-    div[data-testid="stMetric"]:nth-child(2) {
+    /* 2. Kart: Yakılan (Yeşil) */
+    div[data-testid="stHorizontalBlock"] > div:nth-child(2) div[data-testid="stMetric"] {
         background-color: #E8F5E9 !important;
         border: 1px solid #A5D6A7 !important;
     }
-    div[data-testid="stMetric"]:nth-child(2) div[data-testid="stMetricValue"] {
+    div[data-testid="stHorizontalBlock"] > div:nth-child(2) div[data-testid="stMetricValue"] {
         color: #1B5E20 !important;
     }
 
-    /* Kalan (Mor) */
-    div[data-testid="stMetric"]:nth-child(3) {
+    /* 3. Kart: Kalan (Mor) */
+    div[data-testid="stHorizontalBlock"] > div:nth-child(3) div[data-testid="stMetric"] {
         background-color: #F3E5F5 !important;
         border: 1px solid #CE93D8 !important;
     }
-    div[data-testid="stMetric"]:nth-child(3) div[data-testid="stMetricValue"] {
+    div[data-testid="stHorizontalBlock"] > div:nth-child(3) div[data-testid="stMetricValue"] {
         color: #6A1B9A !important;
     }
 
-    /* Su (Mavi) */
-    div[data-testid="stMetric"]:nth-child(4) {
+    /* 4. Kart: Su (Mavi) */
+    div[data-testid="stHorizontalBlock"] > div:nth-child(4) div[data-testid="stMetric"] {
         background-color: #E3F2FD !important;
         border: 1px solid #90CAF9 !important;
     }
-    div[data-testid="stMetric"]:nth-child(4) div[data-testid="stMetricValue"] {
+    div[data-testid="stHorizontalBlock"] > div:nth-child(4) div[data-testid="stMetricValue"] {
         color: #0D47A1 !important;
     }
 
