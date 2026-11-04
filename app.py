@@ -480,7 +480,7 @@ def show_home(user):
         st.divider()
         st.write("**Hızlı Ekle**")
         
-        # 1. Satır (2 Buton)
+        # Su butonları (2x2 düzeni)
         col1, col2 = st.columns(2)
         if col1.button("🥛 1 Bardak (200ml)", use_container_width=True):
             meal_mod.add_water(user["id"], 200)
@@ -489,7 +489,6 @@ def show_home(user):
             meal_mod.add_water(user["id"], 300)
             st.rerun()
             
-        # 2. Satır (2 Buton)
         col3, col4 = st.columns(2)
         if col3.button("🥤 Şişe (500ml)", use_container_width=True):
             meal_mod.add_water(user["id"], 500)
@@ -497,12 +496,15 @@ def show_home(user):
         if col4.button("🚰 1 Litre", use_container_width=True):
             meal_mod.add_water(user["id"], 1000)
             st.rerun()
-        # Su hedefine ulaşınca konfeti patlat
-        if water_ml >= 2000 and "konfeti_gosterildi" not in st.session_state:
             
-        # Su hedefine ulaşınca KONFETİ patlat
+        st.divider()
+        
+        if st.button("↩️ Son Eklenen 1 Bardağı Geri Al (200ml)", use_container_width=True):
+            meal_mod.remove_water(user["id"], 200)
+            st.rerun()
+
+        # Konfeti efekti (girinti tamamen düzeltildi)
         if water_ml >= 2000 and "konfeti_gosterildi" not in st.session_state:
-            # JavaScript ile harici konfeti kütüphanesini çağır
             st.markdown("""
                 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
                 <script>
@@ -515,13 +517,6 @@ def show_home(user):
                 </script>
             """, unsafe_allow_html=True)
             st.session_state.konfeti_gosterildi = True
-        st.divider()
-        
-        # Geri Al Butonu (Tek Satır)
-        if st.button("↩️ Son Eklenen 1 Bardağı Geri Al (200ml)", use_container_width=True):
-            meal_mod.remove_water(user["id"], 200)
-            st.rerun()
-
     # --- 3. AKTİVİTE ---
     with tab_act:
         st.subheader("Bugün Aktivitelerim")
