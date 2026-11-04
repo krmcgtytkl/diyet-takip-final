@@ -156,32 +156,19 @@ st.markdown("""
     div[data-testid="stMetricValue"] {
         font-size: 1.4rem !important;
     }
-    /* --- KARANLIK MOD KORUMASI --- */
-    /* Kullanıcı karanlık moda geçtiğinde kart içi yazıları beyaz yap */
+       /* --- KARANLIK MOD KORUMASI (Sadece Metrik Kartları İçin) --- */
     @media (prefers-color-scheme: dark) {
-        /* Metrik kartlarındaki değerler (ör. 346 kcal) */
+        /* Sadece metriklerin (kutuların) içindeki yazıları beyaz yap */
         div[data-testid="stMetricValue"], 
         div[data-testid="stMetricLabel"] {
             color: #FFFFFF !important;
         }
         
-        /* Kartların arka planını karanlık modda daha koyu bir gri yapalım */
+        /* Metrik kartlarının arka planını koyu yap */
         div[data-testid="stMetric"] {
             background-color: #1C1C1E !important;
             border: 1px solid #3A3A3C !important;
         }
-        
-        /* Diğer metinler ve başlıklar için genel düzeltme */
-        h1, h2, h3, h4, h5, h6, p, span {
-            color: #FAFAFA !important;
-        }
-    }
-    /* Mobilde tam ekran görünüm için kenar boşluklarını sıfırla */
-    .block-container {
-        padding-left: 0rem !important;
-        padding-right: 0rem !important;
-        padding-top: 2rem !important;
-        max-width: 100% !important;
     }
 </style>
 """, unsafe_allow_html=True)
