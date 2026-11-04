@@ -9,7 +9,6 @@ from calories import calorie_target
 from foods_data import FOOD_DATABASE
 import streamlit.components.v1 as components
 
-
 # --- SAYFA AYARLARI VE HAFIZA ---
 st.set_page_config(page_title="KCTFIT", page_icon="🥗", layout="wide")
 
@@ -21,7 +20,7 @@ if "show_profile" not in st.session_state:
 if "karsilama_mesaji" not in st.session_state:
     st.session_state.karsilama_mesaji = None
 
-# --- iOS TARZI ÖZEL CSS (HAP MENÜ DAHİL) ---
+# --- iOS TARZI ÖZEL CSS ---
 st.markdown("""
 <style>
     /* Genel font ve arka plan */
@@ -72,6 +71,7 @@ st.markdown("""
     div[data-testid="stMetricValue"] {
         color: #000000 !important; 
         font-weight: 700;
+        font-size: 1.4rem !important;
     }
     
     /* --- HAP (PILL) MENÜ TASARIMI --- */
@@ -114,8 +114,8 @@ st.markdown("""
     .stTabs [data-baseweb="tab-highlight"] {
         display: none;
     }
-            /* --- ÖZEL METRİK KART RENKLERİ (KESİN ÇÖZÜM) --- */
-    
+
+    /* --- ÖZEL METRİK KART RENKLERİ (AÇIK TEMA İÇİN) --- */
     /* 1. Kart: Alınan (Turuncu) */
     div[data-testid="stHorizontalBlock"] > div:nth-child(1) div[data-testid="stMetric"] {
         background-color: #FFF3E0 !important;
@@ -152,27 +152,31 @@ st.markdown("""
         color: #0D47A1 !important;
     }
 
-    /* Yazıların kesilmesini önlemek için font boyutunu ayarla */
-    div[data-testid="stMetricValue"] {
-        font-size: 1.4rem !important;
-    }
-         /* --- KARANLIK MOD KORUMASI --- */
+    /* --- KARANLIK MOD KESİN ÇÖZÜM (Tüm Renkleri Ezer) --- */
     @media (prefers-color-scheme: dark) {
-        /* Sadece metrik kartlarının arka planını koyu yap (kutuların içi koyu olsun) */
-        div[data-testid="stMetric"] {
+        /* Karanlık modda tüm metrik kutularının arka planını koyu gri yap */
+        div[data-testid="stHorizontalBlock"] div[data-testid="stMetric"] {
             background-color: #1C1C1E !important;
             border: 1px solid #3A3A3C !important;
         }
         
-        /* Kutuların içindeki rakamlar (926 kcal vs.) beyaz olsun */
-        div[data-testid="stMetricValue"] {
-            color: #FFFFFF !important;
-        }
-        
-        /* Kutuların içindeki etiketler (Alınan, Yakılan vs.) açık gri olsun */
-        div[data-testid="stMetricLabel"] {
+        /* Karanlık modda tüm metrik kutularının etiketlerini açık gri yap */
+        div[data-testid="stHorizontalBlock"] div[data-testid="stMetricLabel"] {
             color: #A1A1A6 !important;
         }
+        
+        /* Karanlık modda tüm metrik kutularının rakamlarını beyaz yap */
+        div[data-testid="stHorizontalBlock"] div[data-testid="stMetricValue"] {
+            color: #FFFFFF !important;
+        }
+    }
+
+    /* Mobilde tam ekran görünüm için kenar boşluklarını sıfırla */
+    .block-container {
+        padding-left: 0rem !important;
+        padding-right: 0rem !important;
+        padding-top: 2rem !important;
+        max-width: 100% !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -209,7 +213,6 @@ def get_random_motivation():
     return random.choice(MOTIVASYON_CUMLELERI)
 
 def get_combined_foods(user_id):
-    """Hazır yemekler ile kullanıcının kendi yemeklerini birleştirir."""
     foods = {k: v for k, v in FOOD_DATABASE.items()}
     custom = meal_mod.get_custom_foods(user_id)
     for c in custom:
@@ -318,12 +321,10 @@ def show_profile_setup(user):
 def show_home(user):
     # --- SOL MENÜ (SIDEBAR) ---
     with st.sidebar:
-        # Kullanıcının isminin baş harflerini al (Avatar için)
         bas_harfler = "".join([word[0].upper() for word in user['display_name'].split() if word])
         if len(bas_harfler) > 2:
             bas_harfler = bas_harfler[:2]
             
-        # iOS Tarzı Profil Kartı
         st.markdown(f"""
         <div style="text-align: center; padding: 15px 0;">
             <div style="width: 70px; height: 70px; background-color: #007AFF; color: white; 
@@ -374,12 +375,9 @@ def show_home(user):
                     st.success("Hesabınız ve tüm verileriniz silindi.")
                     st.rerun()
 
-    # Eğer profil düzenleme modu açıksa, sadece profil ekranını göster ve çık
     if st.session_state.show_profile:
         show_profile_setup(user)
         return
-
-    # --- ANA SAYFA İÇERİĞİ ---
 
     # --- ANA SAYFA İÇERİĞİ ---
     st.title("🥗 Bugünkü Özet")
@@ -468,7 +466,6 @@ def show_home(user):
         if summary["meals"]:
             for m in summary["meals"]:
                 c1, c2 = st.columns([5, 1])
-                # Öğün tipine göre emoji seç
                 emoji = "🍽️"
                 if m['meal_type'] == "Kahvaltı": emoji = "🍳"
                 elif m['meal_type'] == "Öğle": emoji = "🍲"
@@ -537,7 +534,6 @@ def show_home(user):
         st.divider()
         st.write("**Hızlı Ekle**")
         
-        # Su butonları (2x2 düzeni)
         col1, col2 = st.columns(2)
         if col1.button("🥛 1 Bardak (200ml)", use_container_width=True):
             meal_mod.add_water(user["id"], 200)
@@ -560,7 +556,6 @@ def show_home(user):
             meal_mod.remove_water(user["id"], 200)
             st.rerun()
 
-        # Su hedefine ulaşınca balon patlat
         if water_ml >= 2000 and "konfeti_gosterildi" not in st.session_state:
             st.balloons()
             st.session_state.konfeti_gosterildi = True
@@ -571,7 +566,6 @@ def show_home(user):
         if summary["activities"]:
             for a in summary["activities"]:
                 c1, c2 = st.columns([5, 1])
-                # Aktivite türüne göre emoji seç
                 act_emoji = "🏃"
                 if "Yürüyüş" in a['activity_name']: act_emoji = "🚶"
                 elif "Koşu" in a['activity_name']: act_emoji = "🏃‍♂️"
