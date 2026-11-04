@@ -112,42 +112,47 @@ st.markdown("""
     .stTabs [data-baseweb="tab-highlight"] {
         display: none;
     }
-    /* Özel Metrik Kart Renkleri (iOS Health Tarzı) */
+        /* --- ÖZEL METRİK KART RENKLERİ --- */
     
     /* Alınan (Turuncu) */
-    div[data-testid="stMetric"]:nth-of-type(1) {
-        background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%) !important;
+    div[data-testid="stMetric"]:nth-child(1) {
+        background-color: #FFF3E0 !important;
         border: 1px solid #FFCC80 !important;
     }
-    div[data-testid="stMetric"]:nth-of-type(1) div[data-testid="stMetricValue"] {
+    div[data-testid="stMetric"]:nth-child(1) div[data-testid="stMetricValue"] {
         color: #E65100 !important;
     }
 
     /* Yakılan (Yeşil) */
-    div[data-testid="stMetric"]:nth-of-type(2) {
-        background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%) !important;
+    div[data-testid="stMetric"]:nth-child(2) {
+        background-color: #E8F5E9 !important;
         border: 1px solid #A5D6A7 !important;
     }
-    div[data-testid="stMetric"]:nth-of-type(2) div[data-testid="stMetricValue"] {
+    div[data-testid="stMetric"]:nth-child(2) div[data-testid="stMetricValue"] {
         color: #1B5E20 !important;
     }
 
-    /* Kalan (Mor veya Senin Seçimin - Şimdilik Şık Bir Gri) */
-    div[data-testid="stMetric"]:nth-of-type(3) {
-        background: linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%) !important;
+    /* Kalan (Mor) */
+    div[data-testid="stMetric"]:nth-child(3) {
+        background-color: #F3E5F5 !important;
         border: 1px solid #CE93D8 !important;
     }
-    div[data-testid="stMetric"]:nth-of-type(3) div[data-testid="stMetricValue"] {
+    div[data-testid="stMetric"]:nth-child(3) div[data-testid="stMetricValue"] {
         color: #6A1B9A !important;
     }
 
     /* Su (Mavi) */
-    div[data-testid="stMetric"]:nth-of-type(4) {
-        background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%) !important;
+    div[data-testid="stMetric"]:nth-child(4) {
+        background-color: #E3F2FD !important;
         border: 1px solid #90CAF9 !important;
     }
-    div[data-testid="stMetric"]:nth-of-type(4) div[data-testid="stMetricValue"] {
+    div[data-testid="stMetric"]:nth-child(4) div[data-testid="stMetricValue"] {
         color: #0D47A1 !important;
+    }
+
+    /* Yazıların kesilmesini önlemek için font boyutunu ayarla */
+    div[data-testid="stMetricValue"] {
+        font-size: 1.4rem !important;
     }
 </style>
 """, unsafe_allow_html=True)
