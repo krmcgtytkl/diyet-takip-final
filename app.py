@@ -411,7 +411,14 @@ def show_home(user):
         if summary["meals"]:
             for m in summary["meals"]:
                 c1, c2 = st.columns([5, 1])
-                c1.write(f"**{m['food_name']}** — {int(m['calories'])} kcal")
+                # Öğün tipine göre emoji seç
+                emoji = "🍽️"
+                if m['meal_type'] == "Kahvaltı": emoji = "🍳"
+                elif m['meal_type'] == "Öğle": emoji = "🍲"
+                elif m['meal_type'] == "Akşam": emoji = "🍽️"
+                elif m['meal_type'] == "Ara Öğün": emoji = "🍎"
+                
+                c1.write(f"{emoji} **{m['food_name']}** — {int(m['calories'])} kcal")
                 if c2.button("🗑️", key=f"del_meal_{m['id']}"):
                     meal_mod.delete_meal(m["id"])
                     st.rerun()
@@ -490,7 +497,10 @@ def show_home(user):
         if col4.button("🚰 1 Litre", use_container_width=True):
             meal_mod.add_water(user["id"], 1000)
             st.rerun()
-            
+        # Su hedefine ulaşınca konfeti patlat
+        if water_ml >= 2000 and "konfeti_gosterildi" not in st.session_state:
+            st.balloons()
+            st.session_state.konfeti_gosterildi = True
         st.divider()
         
         # Geri Al Butonu (Tek Satır)
@@ -504,7 +514,16 @@ def show_home(user):
         if summary["activities"]:
             for a in summary["activities"]:
                 c1, c2 = st.columns([5, 1])
-                c1.write(f"**{a['activity_name']}** — {a['duration_min']} dk, {int(a['calories_burned'])} kcal")
+                # Aktivite türüne göre emoji seç
+                act_emoji = "🏃"
+                if "Yürüyüş" in a['activity_name']: act_emoji = "🚶"
+                elif "Koşu" in a['activity_name']: act_emoji = "🏃‍♂️"
+                elif "Bisiklet" in a['activity_name']: act_emoji = "🚴"
+                elif "Yüzme" in a['activity_name']: act_emoji = "🏊"
+                elif "Ağırlık" in a['activity_name']: act_emoji = "💪"
+                elif "Pilates" in a['activity_name'] or "Yoga" in a['activity_name']: act_emoji = "🧘"
+                
+                c1.write(f"{act_emoji} **{a['activity_name']}** — {a['duration_min']} dk, {int(a['calories_burned'])} kcal")
                 if c2.button("🗑️", key=f"del_act_{a['id']}"):
                     meal_mod.delete_activity(a["id"])
                     st.rerun()
