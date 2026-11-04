@@ -500,7 +500,7 @@ def show_home(user):
         # Su hedefine ulaşınca konfeti patlat
         if water_ml >= 2000 and "konfeti_gosterildi" not in st.session_state:
             
-                    # Su hedefine ulaşınca KONFETİ patlat
+        # Su hedefine ulaşınca KONFETİ patlat
         if water_ml >= 2000 and "konfeti_gosterildi" not in st.session_state:
             # JavaScript ile harici konfeti kütüphanesini çağır
             st.markdown("""
