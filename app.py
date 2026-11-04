@@ -692,6 +692,18 @@ def show_home(user):
     # --- 6. RAPORLAR ---
     with tab_chart:
         st.subheader("📊 Analiz ve Raporlar")
+        # --- HAFTALIK ÖZET KARTI ---
+        haftalik_veri = meal_mod.get_last_7_days(user["id"])
+        toplam_alinan = sum(d["eaten"] for d in haftalik_veri)
+        toplam_yakilan = sum(d["burned"] for d in haftalik_veri)
+        
+        st.info(f"""
+        🎉 **Bu Haftanın Özeti**
+        
+        Bu hafta toplam **{int(toplam_alinan)} kcal** aldın ve **{int(toplam_yakilan)} kcal** yaktın. 
+        Harika gidiyorsun, hedefine ulaşmak için son 1 adım! 💪
+        """)
+        st.divider()
         
         rapor_tipi = st.radio("Rapor Tipi", ["Son 7 Gün", "Aylık Rapor"], horizontal=True)
         
