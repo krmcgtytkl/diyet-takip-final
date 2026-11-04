@@ -500,6 +500,20 @@ def show_home(user):
         # Su hedefine ulaşınca konfeti patlat
         if water_ml >= 2000 and "konfeti_gosterildi" not in st.session_state:
             st.balloons()
+                    # Su hedefine ulaşınca KONFETİ patlat
+        if water_ml >= 2000 and "konfeti_gosterildi" not in st.session_state:
+            # JavaScript ile harici konfeti kütüphanesini çağır
+            st.markdown("""
+                <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+                <script>
+                    confetti({
+                        particleCount: 150,
+                        spread: 70,
+                        origin: { y: 0.6 },
+                        colors: ['#007AFF', '#FFCC80', '#A5D6A7', '#CE93D8']
+                    });
+                </script>
+            """, unsafe_allow_html=True)
             st.session_state.konfeti_gosterildi = True
         st.divider()
         
