@@ -281,7 +281,7 @@ def show_profile_setup(user):
 
 def show_home(user):
     # --- SOL MENÜ (SIDEBAR) ---
-       with st.sidebar:
+    with st.sidebar:
         # Kullanıcının isminin baş harflerini al (Avatar için)
         bas_harfler = "".join([word[0].upper() for word in user['display_name'].split() if word])
         if len(bas_harfler) > 2:
@@ -338,9 +338,12 @@ def show_home(user):
                     st.success("Hesabınız ve tüm verileriniz silindi.")
                     st.rerun()
 
+    # Eğer profil düzenleme modu açıksa, sadece profil ekranını göster ve çık
     if st.session_state.show_profile:
         show_profile_setup(user)
         return
+
+    # --- ANA SAYFA İÇERİĞİ ---
 
     # --- ANA SAYFA İÇERİĞİ ---
     st.title("🥗 Bugünkü Özet")
