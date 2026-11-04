@@ -152,22 +152,18 @@ st.markdown("""
         color: #0D47A1 !important;
     }
 
-    /* --- KARANLIK MOD KESİN ÇÖZÜM (Tüm Renkleri Ezer) --- */
+       /* --- KARANLIK MOD İÇİN RENKLERİ İPTAL ET --- */
     @media (prefers-color-scheme: dark) {
-        /* Karanlık modda tüm metrik kutularının arka planını koyu gri yap */
-        div[data-testid="stHorizontalBlock"] div[data-testid="stMetric"] {
-            background-color: #1C1C1E !important;
+        /* Özel renkli kart arka planlarını iptal et (şeffaf yap) */
+        div[data-testid="stMetric"] {
+            background-color: transparent !important;
             border: 1px solid #3A3A3C !important;
         }
         
-        /* Karanlık modda tüm metrik kutularının etiketlerini açık gri yap */
-        div[data-testid="stHorizontalBlock"] div[data-testid="stMetricLabel"] {
-            color: #A1A1A6 !important;
-        }
-        
-        /* Karanlık modda tüm metrik kutularının rakamlarını beyaz yap */
-        div[data-testid="stHorizontalBlock"] div[data-testid="stMetricValue"] {
-            color: #FFFFFF !important;
+        /* Rakamlar ve etiketler için Streamlit'in kendi rengini kullan */
+        div[data-testid="stMetricValue"], 
+        div[data-testid="stMetricLabel"] {
+            color: inherit !important;
         }
     }
 
