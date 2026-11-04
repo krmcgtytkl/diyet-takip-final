@@ -269,3 +269,9 @@ def get_measurements_for_chart(user_id, year=None, month=None):
     except Exception as e:
         print(f"Grafik ölçü hatası: {e}")
         return []
+def delete_custom_food(food_id):
+    """Kullanıcının kendi listesine eklediği bir yemeği siler."""
+    try:
+        supabase.table("custom_foods").delete().eq("id", food_id).execute()
+    except Exception as e:
+        print(f"Özel yemek silme hatası: {e}")
