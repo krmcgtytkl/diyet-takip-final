@@ -200,7 +200,7 @@ def get_combined_foods(user_id):
 def show_login_page():
     st.title("🥗 KCTFIT")
     st.caption("👨‍💻 Geliştirici: **Kerim Çağatay Toklu** | 📱 KCTFIT v1.0")
-    st.markdown("### *Sağlıklı yaşam burada başlıyor by kct...*")
+    st.markdown("### *Sağlıklı yaşam burada başlıyor...*")
     
     tab1, tab2 = st.tabs(["Giriş Yap", "Kayıt Ol"])
     
@@ -281,9 +281,26 @@ def show_profile_setup(user):
 
 def show_home(user):
     # --- SOL MENÜ (SIDEBAR) ---
-    with st.sidebar:
-        st.title(f"👋 {user['display_name']}")
-        st.caption(f"@{user['username']}")
+       with st.sidebar:
+        # Kullanıcının isminin baş harflerini al (Avatar için)
+        bas_harfler = "".join([word[0].upper() for word in user['display_name'].split() if word])
+        if len(bas_harfler) > 2:
+            bas_harfler = bas_harfler[:2]
+            
+        # iOS Tarzı Profil Kartı
+        st.markdown(f"""
+        <div style="text-align: center; padding: 15px 0;">
+            <div style="width: 70px; height: 70px; background-color: #007AFF; color: white; 
+                        border-radius: 50%; display: flex; align-items: center; 
+                        justify-content: center; font-size: 28px; font-weight: bold; 
+                        margin: 0 auto 10px auto; box-shadow: 0 4px 10px rgba(0,122,255,0.3);">
+                {bas_harfler}
+            </div>
+            <h3 style="margin: 0; color: #000000;">{user['display_name']}</h3>
+            <p style="color: #8E8E93; margin: 5px 0 0 0; font-size: 14px;">@{user['username']}</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
         st.divider()
         st.metric("🎯 Günlük Kalori Hedefi", f"{user['daily_calorie_target'] or '—'} kcal")
         st.divider()
