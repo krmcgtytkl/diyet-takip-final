@@ -456,7 +456,7 @@ def show_home(user):
                     st.success(f"{f_name} günlüğe eklendi!")
                     st.rerun()
 
-    # --- 1. YEMEK EKLE ---
+      # --- 1. YEMEK EKLE ---
     with tab_meal:
         st.subheader("Bugün Yediklerim")
         if summary["meals"]:
@@ -473,7 +473,24 @@ def show_home(user):
                     meal_mod.delete_meal(m["id"])
                     st.rerun()
         else:
-            st.info("Henüz yemek eklenmedi.")
+            st.info("Henüz yemek eklenmedi.")  # <-- BU ELSE, EN DIŞTAKİ IF İÇİN
+
+        # --- KENDİ YEMEKLERİNİ YÖNETME KISMI ---
+        st.divider()
+        st.write("**⭐ Kendi Kayıtlı Yemeklerin**")
+        
+        ozel_yemekler = meal_mod.get_custom_foods(user["id"])
+        
+        if ozel_yemekler:
+            for ozel in ozel_yemekler:
+                c1, c2 = st.columns([5, 1])
+                c1.write(f"**{ozel['name']}** — {int(ozel['calories'])} kcal")
+                if c2.button("🗑️", key=f"del_custom_{ozel['id']}"):
+                    meal_mod.delete_custom_food(ozel["id"])
+                    st.success(f"{ozel['name']} listenden silindi!")
+                    st.rerun()
+        else:
+            st.info("Henüz kendi listene yemek kaydetmedin.") # <-- BU ELSE, KENDİ YEMEKLER İÇİN
 
         st.divider()
         st.write("**Yeni Yemek Ekle**")
