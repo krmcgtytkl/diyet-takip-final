@@ -45,6 +45,11 @@ def login(username: str, password: str):
 def update_profile(user_id: int, **fields):
     if not fields:
         return
+    try:
+        supabase.table("users").update(fields).eq("id", user_id).execute()
+    except Exception as e:
+        print(f"Profil güncelleme hatası: {e}")
+
 def update_credentials(user_id, new_username=None, new_password=None):
     """Kullanıcının adını ve/veya şifresini günceller."""
     updates = {}
@@ -67,7 +72,14 @@ def update_credentials(user_id, new_username=None, new_password=None):
         return True, "Bilgileriniz başarıyla güncellendi."
     except Exception as e:
         return False, f"Güncelleme hatası: {e}"
+
+def login_with_username(username):
+    """Çerezden gelen kullanıcı adı ile giriş yapar (şifre kontrolü olmadan)."""
     try:
-        supabase.table("users").update(fields).eq("id", user_id).execute()
+        response = supabase.table("users").select("*").eq("username", username).execute()
+        if response.data:
+            return response.data[0]
+        return None
     except Exception as e:
-        print(f"Profil güncelleme hatası: {e}")
+        print(f"Otomatik giriş hatası: {e}")
+        return None
