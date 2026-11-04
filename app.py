@@ -264,7 +264,15 @@ def show_profile_setup(user):
             
         activity = st.selectbox("Günlük hareket seviyesi", ["hareketsiz", "az", "orta", "çok", "aşırı"], index=["hareketsiz", "az", "orta", "çok", "aşırı"].index(user["activity_level"] or "az"))
         goal = st.selectbox("Hedefin", ["kilo ver", "koru", "kilo al"], index=["kilo ver", "koru", "kilo al"].index(user["goal"] or "kilo ver"))
+        st.divider()
+        st.write("**🔐 Hesap Bilgilerini Değiştir**")
+        st.caption("Sadece değiştirmek istediğiniz alanı doldurun, diğerlerini boş bırakın.")
         
+        col_user, col_pass = st.columns(2)
+        with col_user:
+            yeni_kullanici_adi = st.text_input("Yeni Kullanıcı Adı", value="", help="Küçük harf ve rakam kullanın.")
+        with col_pass:
+            yeni_sifre = st.text_input("Yeni Şifre", type="password", value="", help="En az 4 karakter.")
         submitted = st.form_submit_button("Değişiklikleri Kaydet", type="primary")
 
     if submitted:
@@ -285,6 +293,15 @@ def show_profile_setup(user):
         
         st.session_state.show_profile = False
         st.success(f"Profiliniz başarıyla güncellendi! Günlük hedef: {target} kcal")
+        # Kullanıcı adı ve şifre güncellemesi
+        if yeni_kullanici_adi or yeni_sifre:
+            ok, msg = auth.update_credentials(user["id"], yeni_kullanici_adi, yeni_sifre)
+            if ok:
+                st.success(msg)
+                if yeni_kullanici_adi:
+                    st.session_state.user["username"] = yeni_kullanici_adi.strip().lower()
+            else:
+                st.error(msg)
         st.rerun()
 
 def show_home(user):
