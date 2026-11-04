@@ -9,8 +9,9 @@ from calories import calorie_target
 from foods_data import FOOD_DATABASE
 import streamlit.components.v1 as components
 
+
 # --- SAYFA AYARLARI VE HAFIZA ---
-st.set_page_config(page_title="KCTFIT", page_icon="🥗", layout="centered")
+st.set_page_config(page_title="KCTFIT", page_icon="🥗", layout="wide")
 
 # Session state başlangıç değerleri
 if "user" not in st.session_state:
@@ -154,6 +155,13 @@ st.markdown("""
     /* Yazıların kesilmesini önlemek için font boyutunu ayarla */
     div[data-testid="stMetricValue"] {
         font-size: 1.4rem !important;
+    }
+    /* Mobilde tam ekran görünüm için kenar boşluklarını sıfırla */
+    .block-container {
+        padding-left: 0rem !important;
+        padding-right: 0rem !important;
+        padding-top: 2rem !important;
+        max-width: 100% !important;
     }
 </style>
 """, unsafe_allow_html=True)
