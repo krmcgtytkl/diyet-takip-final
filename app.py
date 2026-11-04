@@ -499,7 +499,7 @@ def show_home(user):
             st.rerun()
         # Su hedefine ulaşınca konfeti patlat
         if water_ml >= 2000 and "konfeti_gosterildi" not in st.session_state:
-            st.balloons()
+            
                     # Su hedefine ulaşınca KONFETİ patlat
         if water_ml >= 2000 and "konfeti_gosterildi" not in st.session_state:
             # JavaScript ile harici konfeti kütüphanesini çağır
