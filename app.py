@@ -156,18 +156,22 @@ st.markdown("""
     div[data-testid="stMetricValue"] {
         font-size: 1.4rem !important;
     }
-       /* --- KARANLIK MOD KORUMASI (Sadece Metrik Kartları İçin) --- */
+         /* --- KARANLIK MOD KORUMASI --- */
     @media (prefers-color-scheme: dark) {
-        /* Sadece metriklerin (kutuların) içindeki yazıları beyaz yap */
-        div[data-testid="stMetricValue"], 
-        div[data-testid="stMetricLabel"] {
-            color: #FFFFFF !important;
-        }
-        
-        /* Metrik kartlarının arka planını koyu yap */
+        /* Sadece metrik kartlarının arka planını koyu yap (kutuların içi koyu olsun) */
         div[data-testid="stMetric"] {
             background-color: #1C1C1E !important;
             border: 1px solid #3A3A3C !important;
+        }
+        
+        /* Kutuların içindeki rakamlar (926 kcal vs.) beyaz olsun */
+        div[data-testid="stMetricValue"] {
+            color: #FFFFFF !important;
+        }
+        
+        /* Kutuların içindeki etiketler (Alınan, Yakılan vs.) açık gri olsun */
+        div[data-testid="stMetricLabel"] {
+            color: #A1A1A6 !important;
         }
     }
 </style>
