@@ -503,20 +503,23 @@ def show_home(user):
             meal_mod.remove_water(user["id"], 200)
             st.rerun()
 
-        # Konfeti efekti (girinti tamamen düzeltildi)
+        # Su hedefine ulaşınca KONFETİ patlat
         if water_ml >= 2000 and "konfeti_gosterildi" not in st.session_state:
-            st.markdown("""
-                <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-                <script>
-                    confetti({
-                        particleCount: 150,
-                        spread: 70,
-                        origin: { y: 0.6 },
-                        colors: ['#007AFF', '#FFCC80', '#A5D6A7', '#CE93D8']
-                    });
-                </script>
-            """, unsafe_allow_html=True)
+            # JavaScript kodunu güvenli bir bileşen içinde çalıştır
+            confetti_js = """
+            <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+            <script>
+                confetti({
+                    particleCount: 150,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                    colors: ['#007AFF', '#FFCC80', '#A5D6A7', '#CE93D8']
+                });
+            </script>
+            """
+            components.html(confetti_js, height=0, width=0)
             st.session_state.konfeti_gosterildi = True
+
     # --- 3. AKTİVİTE ---
     with tab_act:
         st.subheader("Bugün Aktivitelerim")
