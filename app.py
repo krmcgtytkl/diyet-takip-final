@@ -7,6 +7,7 @@ import datetime
 from database import init_db
 from calories import calorie_target
 from foods_data import FOOD_DATABASE
+import streamlit.components.v1 as components
 
 # --- SAYFA AYARLARI VE HAFIZA ---
 st.set_page_config(page_title="KCTFIT", page_icon="🥗", layout="centered")
