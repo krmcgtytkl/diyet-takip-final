@@ -45,6 +45,28 @@ def login(username: str, password: str):
 def update_profile(user_id: int, **fields):
     if not fields:
         return
+def update_credentials(user_id, new_username=None, new_password=None):
+    """Kullanıcının adını ve/veya şifresini günceller."""
+    updates = {}
+    if new_username and new_username.strip():
+        updates["username"] = new_username.strip().lower()
+    if new_password and new_password.strip():
+        updates["password_hash"] = _hash(new_password)
+        
+    if not updates:
+        return False, "Değiştirilecek bir bilgi girilmedi."
+        
+    try:
+        # Kullanıcı adı başkası tarafından alınmış mı kontrol et
+        if "username" in updates:
+            existing = supabase.table("users").select("id").eq("username", updates["username"]).execute()
+            if existing.data and existing.data[0]["id"] != user_id:
+                return False, "Bu kullanıcı adı zaten alınmış."
+        
+        supabase.table("users").update(updates).eq("id", user_id).execute()
+        return True, "Bilgileriniz başarıyla güncellendi."
+    except Exception as e:
+        return False, f"Güncelleme hatası: {e}"
     try:
         supabase.table("users").update(fields).eq("id", user_id).execute()
     except Exception as e:
