@@ -116,51 +116,18 @@ st.markdown("""
         display: none;
     }
 
-    /* --- ÖZEL METRİK KART RENKLERİ --- */
-    div[data-testid="stHorizontalBlock"] > div:nth-child(1) div[data-testid="stMetric"] {
-        background-color: #FFF3E0 !important; border: 1px solid #FFCC80 !important;
-    }
-    div[data-testid="stHorizontalBlock"] > div:nth-child(1) div[data-testid="stMetricValue"] { color: #E65100 !important; }
-
-    div[data-testid="stHorizontalBlock"] > div:nth-child(2) div[data-testid="stMetric"] {
-        background-color: #E8F5E9 !important; border: 1px solid #A5D6A7 !important;
-    }
-    div[data-testid="stHorizontalBlock"] > div:nth-child(2) div[data-testid="stMetricValue"] { color: #1B5E20 !important; }
-
-    div[data-testid="stHorizontalBlock"] > div:nth-child(3) div[data-testid="stMetric"] {
-        background-color: #F3E5F5 !important; border: 1px solid #CE93D8 !important;
-    }
-    div[data-testid="stHorizontalBlock"] > div:nth-child(3) div[data-testid="stMetricValue"] { color: #6A1B9A !important; }
-
-    div[data-testid="stHorizontalBlock"] > div:nth-child(4) div[data-testid="stMetric"] {
-        background-color: #E3F2FD !important; border: 1px solid #90CAF9 !important;
-    }
-    div[data-testid="stHorizontalBlock"] > div:nth-child(4) div[data-testid="stMetricValue"] { color: #0D47A1 !important; }
-
-    /* Mobilde tam ekran görünüm için kenar boşluklarını sıfırla */
-    .block-container {
-        padding-left: 0rem !important;
-        padding-right: 0rem !important;
-        padding-top: 2rem !important;
-        max-width: 100% !important;
-    }
-        /* --- KARANLIK MOD KESİN ÇÖZÜM --- */
+    /* --- KARANLIK MOD İÇİN KESİN ÇÖZÜM --- */
     @media (prefers-color-scheme: dark) {
-        /* Tüm metrik kutularının arka planını koyu gri yap (diğer renkleri ezer) */
-        div[data-testid="stHorizontalBlock"] > div div[data-testid="stMetric"] {
+        /* Tüm metrik kartlarını koyu gri yap */
+        div[data-testid="stMetric"] {
             background-color: #1C1C1E !important;
             border: 1px solid #3A3A3C !important;
-            box-shadow: none !important;
         }
         
-        /* Kutuların içindeki rakamları (650 kcal vs.) bembeyaz yap */
-        div[data-testid="stHorizontalBlock"] > div div[data-testid="stMetricValue"] {
+        /* Kart içindeki yazıları beyaz yap */
+        div[data-testid="stMetricLabel"], 
+        div[data-testid="stMetricValue"] {
             color: #FFFFFF !important;
-        }
-        
-        /* Kutuların içindeki etiketleri (Alınan, Yakılan vs.) açık gri yap */
-        div[data-testid="stHorizontalBlock"] > div div[data-testid="stMetricLabel"] {
-            color: #A1A1A6 !important;
         }
     }
 </style>
