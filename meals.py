@@ -292,3 +292,36 @@ def get_this_week_summary(user_id):
     except Exception as e:
         print(f"Haftalık özet hatası: {e}")
         return {"eaten": 0, "burned": 0, "days_passed": 1}
+def update_streak(user_id):
+    """Kullanıcının günlük giriş serisini günceller ve döndürür."""
+    from datetime import date, timedelta
+    today = str(date.today())
+    yesterday = str(date.today() - timedelta(days=1))
+    
+    try:
+        # Kullanıcının son giriş ve seri bilgisini çek
+        res = supabase.table("users").select("last_login, streak").eq("id", user_id).execute()
+        if not res.data:
+            return 1
+            
+        user_data = res.data[0]
+        last_login = user_data.get("last_login")
+        current_streak = user_data.get("streak") or 0
+        
+        if last_login == today:
+            return current_streak
+        elif last_login == yesterday:
+            new_streak = current_streak + 1
+        else:
+            new_streak = 1
+            
+        # Veritabanını güncelle
+        supabase.table("users").update({
+            "last_login": today, 
+            "streak": new_streak
+        }).eq("id", user_id).execute()
+        
+        return new_streak
+    except Exception as e:
+        print(f"Seri güncelleme hatası: {e}")
+        return 1
