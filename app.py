@@ -448,6 +448,7 @@ def show_home(user):
         st.divider()
         st.write("**Yeni Yemek Ekle**")
         
+         # Yapay zeka ile veri çekme (Formun dışında)
         tum_yemekler = get_combined_foods(user["id"])
         yemek_secimi = st.selectbox("Hazır Yemekler", ["Kendim Gireceğim"] + list(tum_yemekler.keys()))
         
@@ -459,15 +460,45 @@ def show_home(user):
             varsayilan_carb = float(secili["carb"])
             varsayilan_fat = float(secili["fat"])
 
+        # Eğer "Kendim Gireceğim" seçildiyse AI butonunu göster
+        if yemek_secimi == "Kendim Gireceğim":
+            ai_food_name = st.text_input("Yemek adı (Yapay Zeka ile getir)", key="ai_food_name_input")
+            if st.button("✨ Yapay Zekadan Bilgileri Getir", key="ai_get_btn"):
+                if ai_food_name.strip():
+                    with st.spinner("Yapay zeka düşünüyor..."):
+                        import food_ai
+                        ai_data = food_ai.get_food_data_by_name(ai_food_name)
+                        if "error" in ai_data:
+                            st.error(ai_data["error"])
+                        else:
+                            st.session_state["ai_cal"] = ai_data["calories"]
+                            st.session_state["ai_pro"] = ai_data["protein_g"]
+                            st.session_state["ai_carb"] = ai_data["carbs_g"]
+                            st.session_state["ai_fat"] = ai_data["fat_g"]
+                            st.success(f"{ai_food_name} için bilgiler getirildi!")
+                            st.rerun()
+                else:
+                    st.warning("Lütfen bir yemek adı yazın.")
+
+        # Değerleri hazırla (AI'dan geldiyse onu kullan, yoksa varsayılan)
+        final_cal = st.session_state.get("ai_cal", varsayilan_cal)
+        final_pro = st.session_state.get("ai_pro", varsayilan_pro)
+        final_carb = st.session_state.get("ai_carb", varsayilan_carb)
+        final_fat = st.session_state.get("ai_fat", varsayilan_fat)
+
         with st.form("meal_form", clear_on_submit=True):
-            default_name = yemek_secimi if yemek_secimi != "Kendim Gireceğim" else ""
+            # Eğer AI'dan isim geldiyse onu göster, yoksa varsayılan
+            default_name = st.session_state.get("ai_food_name_input", "")
+            if yemek_secimi != "Kendim Gireceğim":
+                default_name = yemek_secimi
+                
             food_name = st.text_input("Yemek adı", value=default_name)
             meal_type = st.selectbox("Öğün", ["Kahvaltı", "Öğle", "Akşam", "Ara Öğün"])
             c1, c2, c3, c4 = st.columns(4)
-            calories = c1.number_input("Kalori", 0.0, 5000.0, varsayilan_cal, 10.0)
-            protein = c2.number_input("Protein (g)", 0.0, 500.0, varsayilan_pro, 1.0)
-            carbs = c3.number_input("Karb. (g)", 0.0, 500.0, varsayilan_carb, 1.0)
-            fat = c4.number_input("Yağ (g)", 0.0, 500.0, varsayilan_fat, 1.0)
+            calories = c1.number_input("Kalori", 0.0, 5000.0, float(final_cal), 10.0)
+            protein = c2.number_input("Protein (g)", 0.0, 500.0, float(final_pro), 1.0)
+            carbs = c3.number_input("Karb. (g)", 0.0, 500.0, float(final_carb), 1.0)
+            fat = c4.number_input("Yağ (g)", 0.0, 500.0, float(final_fat), 1.0)
             
             col_save, col_add = st.columns(2)
             save_custom = col_save.form_submit_button("⭐ Yemeği Listeye Kaydet")
@@ -483,7 +514,7 @@ def show_home(user):
                     st.success(f"{food_name} hem günlüğe eklendi hem de listene kaydedildi!")
                 else:
                     st.success(f"{food_name} eklendi!")
-                st.rerun()
+                st.rerun()       
 
     # --- 2. SU TAKİBİ ---
     with tab_water:
