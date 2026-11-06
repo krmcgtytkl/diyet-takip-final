@@ -64,7 +64,7 @@ st.markdown("""
     
     /* Kart içindeki yazılar koyu gri */
     div[data-testid="stMetricLabel"] {
-        color: #8E8E93 !important; 
+        color: #555555 !important; 
         font-weight: 600;
     }
     
@@ -124,10 +124,14 @@ st.markdown("""
             border: 1px solid #3A3A3C !important;
         }
         
-        /* Kart içindeki yazıları beyaz yap */
-        div[data-testid="stMetricLabel"], 
+        /* Kart içindeki rakamları (650 kcal vs.) bembeyaz yap */
         div[data-testid="stMetricValue"] {
             color: #FFFFFF !important;
+        }
+        
+        /* Kart içindeki etiketleri (Alınan, Yakılan vb.) açık gri yap */
+        div[data-testid="stMetricLabel"] {
+            color: #A1A1A6 !important;
         }
     }
 </style>
