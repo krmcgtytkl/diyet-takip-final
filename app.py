@@ -144,6 +144,24 @@ st.markdown("""
         padding-top: 2rem !important;
         max-width: 100% !important;
     }
+    /* --- KARANLIK MOD İÇİN METRİK KARTLARI --- */
+    @media (prefers-color-scheme: dark) {
+        /* Tüm metrik kartlarının arka planını koyu gri yap */
+        div[data-testid="stMetric"] {
+            background-color: #1C1C1E !important;
+            border: 1px solid #3A3A3C !important;
+        }
+        
+        /* Kart içindeki etiketleri (Alınan, Yakılan vb.) açık gri yap */
+        div[data-testid="stMetricLabel"] {
+            color: #A1A1A6 !important;
+        }
+        
+        /* Kart içindeki rakamları bembeyaz yap */
+        div[data-testid="stMetricValue"] {
+            color: #FFFFFF !important;
+        }
+    }
 </style>
 """, unsafe_allow_html=True)
 
