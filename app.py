@@ -144,7 +144,17 @@ st.markdown("""
     }
     div[data-testid="stHorizontalBlock"] > div:nth-child(4) div[data-testid="stMetricValue"] { color: #0D47A1 !important; }
     div[data-testid="stHorizontalBlock"] > div:nth-child(4) div[data-testid="stMetricLabel"] { color: #0D47A1 !important; }
-    } 
+      /* --- STREAMLIT KARANLIK MOD İÇİN --- */
+    [data-theme="dark"] div[data-testid="stMetric"] {
+        background-color: #1C1C1E !important;
+        border: 1px solid #3A3A3C !important;
+    }
+    [data-theme="dark"] div[data-testid="stMetricValue"] {
+        color: #FFFFFF !important;
+    }
+    [data-testid="stMetricLabel"] {
+        color: #A1A1A6 !important;
+    }  
 </style>
 """, unsafe_allow_html=True)
 
