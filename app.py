@@ -371,16 +371,29 @@ def show_home(user):
     net = summary["total_eaten"] - summary["total_burned"]
     remaining = target - net
 
-    col1, col2, col3, col4 = st.columns(4)
+    # 1. Satır (3 Kart: Alınan, Yakılan, Açık Kalori)
+    col1, col2, col3 = st.columns(3)
     col1.metric("Alınan", f"{int(summary['total_eaten'])} kcal")
     col2.metric("Yakılan", f"{int(summary['total_burned'])} kcal")
     
-    if remaining < 700:
-        col3.metric("⚠️ Kalan (Açık Azalıyor!)", f"{int(remaining)} kcal", delta="Hedefin altında!", delta_color="inverse")
+    gunluk_acik = summary['total_eaten'] - (target + summary['total_burned'])
+    if gunluk_acik <= 0:
+        col3.metric("🔥 Açık Kalori", f"{abs(int(gunluk_acik))} kcal", delta="Harika gidiyorsun!", delta_color="normal")
     else:
-        col3.metric("Kalan", f"{int(remaining)} kcal")
+        col3.metric("⚠️ Açık Kalori", f"{int(gunluk_acik)} kcal", delta="Hedefi aştın!", delta_color="inverse")
+
+    # 2. Satır (3 Kart: Kalan, Su, Hedefe Ulaşma)
+    col4, col5, col6 = st.columns(3)
+    
+    if remaining < 700:
+        col4.metric("⚠️ Kalan", f"{int(remaining)} kcal", delta="Hedefin altında!", delta_color="inverse")
+    else:
+        col4.metric("Kalan", f"{int(remaining)} kcal")
         
-    col4.metric("Su", f"{water_ml} ml")
+    col5.metric("Su", f"{water_ml} ml")
+
+    hedef_yuzdesi = int((net / target) * 100) if target > 0 else 0
+    col6.metric("🎯 Hedefe Ulaşma", f"%{hedef_yuzdesi}")
     
     if target > 0:
         st.progress(max(0.0, min(1.0, net / target)), text=f"Kalori Hedefi: %{int((net/target)*100)}")
