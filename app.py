@@ -772,9 +772,15 @@ def show_home(user):
             c2.metric("Ortalama Yakılan", f"{int(total_burned/7)} kcal/gün")
             
             st.write("**Günlük Kalori Akışı**")
+            gunluk_acik_listesi = []
+            for d in data:
+                acik = d["eaten"] - (target + d["burned"])
+                gunluk_acik_listesi.append(acik)
+
             st.bar_chart({
                 "Alınan": {l: d["eaten"] for l, d in zip(labels, data)},
                 "Yakılan": {l: d["burned"] for l, d in zip(labels, data)},
+                "Açık Kalori": {l: a for l, a in zip(labels, gunluk_acik_listesi)},
             })
             
             st.divider()
