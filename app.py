@@ -3,12 +3,25 @@ from datetime import date
 import auth
 import meals as meal_mod
 import random
+import datetime
 from database import init_db
 from calories import calorie_target
 from foods_data import FOOD_DATABASE
+import streamlit.components.v1 as components
+from streamlit_cookies_manager import EncryptedCookieManager
+import os
 
 # --- SAYFA AYARLARI VE HAFIZA ---
-st.set_page_config(page_title="KCTFit", page_icon="🥗", layout="centered")
+st.set_page_config(page_title="KCTFIT", page_icon="🥗", layout="wide")
+
+# Çerez yöneticisini başlat (oturum kalıcılığı için)
+cookies = EncryptedCookieManager(
+    prefix="kctfit/",
+    password=os.environ.get("COOKIES_PASSWORD", "KCTFIT-Gizli-Sifre-123")
+)
+
+if not cookies.ready():
+    st.stop()
 
 # Session state başlangıç değerleri
 if "user" not in st.session_state:
@@ -52,40 +65,94 @@ st.markdown("""
     
     /* Metrik kartları (Bembeyaz iOS kart görünümü) */
     div[data-testid="stMetric"] {
-        background-color: #FFFFFF !important; /* Arka planı bembeyaz yaptık */
+        background-color: #FFFFFF !important;
         border-radius: 16px;
         padding: 15px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* Gölgeyi hafiflettik */
-        border: 1px solid #E5E5EA; /* İnce bir gri çerçeve ekledik */
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        border: 1px solid #E5E5EA;
     }
     
-    /* Kart içindeki yazılar (Alınan, Yakılan, vs.) koyu gri olsun */
+    /* Kart içindeki yazılar koyu gri */
     div[data-testid="stMetricLabel"] {
         color: #8E8E93 !important; 
         font-weight: 600;
     }
     
-    /* Kart içindeki büyük rakamlar (0 kcal vs.) simsiyah olsun */
+    /* Kart içindeki büyük rakamlar simsiyah */
     div[data-testid="stMetricValue"] {
         color: #000000 !important; 
         font-weight: 700;
-    }
+        font-size: 1.4rem !important;
     }
     
-    /* Sekmeler (iOS segmented control görünümü) */
+    /* --- HAP (PILL) MENÜ TASARIMI --- */
     .stTabs [data-baseweb="tab-list"] {
-        background-color: #1C1C1E;
-        border-radius: 10px;
-        padding: 5px;
+        background-color: #E5E5EA; 
+        border-radius: 50px;       
+        padding: 5px;              
+        gap: 5px;                  
+        display: flex;
+        flex-wrap: nowrap;         
+        overflow-x: auto;          
+        scrollbar-width: none;     
     }
+    
+    .stTabs [data-baseweb="tab-list"]::-webkit-scrollbar {
+        display: none;
+    }
+
     .stTabs [data-baseweb="tab"] {
-        border-radius: 8px;
+        background-color: transparent;
+        border-radius: 50px;
         color: #8E8E93;
         padding: 8px 16px;
+        font-weight: 600;
+        border: none;
+        white-space: nowrap;
+        transition: all 0.2s ease;
     }
+    
+    .stTabs [data-baseweb="tab"]:hover {
+        color: #007AFF;
+    }
+
     .stTabs [aria-selected="true"] {
-        background-color: #007AFF;
-        color: white;
+        background-color: #FFFFFF !important; 
+        color: #007AFF !important;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+    }
+    
+    .stTabs [data-baseweb="tab-highlight"] {
+        display: none;
+    }
+
+    /* --- ÖZEL METRİK KART RENKLERİ --- */
+    div[data-testid="stHorizontalBlock"] > div:nth-child(1) div[data-testid="stMetric"] {
+        background-color: #FFF3E0 !important; border: 1px solid #FFCC80 !important;
+    }
+    div[data-testid="stHorizontalBlock"] > div:nth-child(1) div[data-testid="stMetricValue"] { color: #E65100 !important; }
+
+    div[data-testid="stHorizontalBlock"] > div:nth-child(2) div[data-testid="stMetric"] {
+        background-color: #E8F5E9 !important; border: 1px solid #A5D6A7 !important;
+    }
+    div[data-testid="stHorizontalBlock"] > div:nth-child(2) div[data-testid="stMetricValue"] { color: #1B5E20 !important; }
+
+    div[data-testid="stHorizontalBlock"] > div:nth-child(3) div[data-testid="stMetric"] {
+        background-color: #F3E5F5 !important; border: 1px solid #CE93D8 !important;
+    }
+    div[data-testid="stHorizontalBlock"] > div:nth-child(3) div[data-testid="stMetricValue"] { color: #6A1B9A !important; }
+
+    div[data-testid="stHorizontalBlock"] > div:nth-child(4) div[data-testid="stMetric"] {
+        background-color: #E3F2FD !important; border: 1px solid #90CAF9 !important;
+    }
+    div[data-testid="stHorizontalBlock"] > div:nth-child(4) div[data-testid="stMetricValue"] { color: #0D47A1 !important; }
+
+    /* Mobilde tam ekran görünüm için kenar boşluklarını sıfırla */
+    .block-container {
+        padding-left: 0rem !important;
+        padding-right: 0rem !important;
+        padding-top: 2rem !important;
+        max-width: 100% !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -120,8 +187,8 @@ MOTIVASYON_CUMLELERI = [
 
 def get_random_motivation():
     return random.choice(MOTIVASYON_CUMLELERI)
+
 def get_combined_foods(user_id):
-    """Hazır yemekler ile kullanıcının kendi yemeklerini birleştirir."""
     foods = {k: v for k, v in FOOD_DATABASE.items()}
     custom = meal_mod.get_custom_foods(user_id)
     for c in custom:
@@ -129,9 +196,10 @@ def get_combined_foods(user_id):
     return foods
 
 def show_login_page():
-    st.title("🥗 KCTFit")
-    st.markdown("### *Sağlıklı yaşam burada başlıyor...*")
+    st.title("🥗 KCTFIT")
     st.caption("👨‍💻 Geliştirici: **Kerim Çağatay Toklu** | 📱 KCTFIT v1.0")
+    st.markdown("### *Sağlıklı yaşam burada başlıyor...*")
+    
     tab1, tab2 = st.tabs(["Giriş Yap", "Kayıt Ol"])
     
     with tab1:
@@ -144,6 +212,9 @@ def show_login_page():
             user = auth.login(username, password)
             if user:
                 st.session_state.user = dict(user)
+                # Kullanıcı adını çereze kaydet (oturum kalıcılığı için)
+                cookies["username"] = user['username']
+                cookies.save()
                 karsilama = random.choice(KARSILAMA_CUMLELERI).format(isim=user['display_name'])
                 st.session_state.karsilama_mesaji = karsilama
                 st.rerun()
@@ -167,12 +238,12 @@ def show_login_page():
                     st.success(msg)
                 else:
                     st.error(msg)
+
 def show_profile_setup(user):
     st.title("👤 Profilini Düzenle")
     st.caption("Kalori hedefini ve kişisel bilgilerini buradan güncelleyebilirsin.")
     
     with st.form("profile_form"):
-        # --- İSİM GÜNCELLEME KISMI ---
         yeni_isim = st.text_input("Görünen Adınız", value=user['display_name'])
         st.divider()
         
@@ -186,17 +257,23 @@ def show_profile_setup(user):
             
         activity = st.selectbox("Günlük hareket seviyesi", ["hareketsiz", "az", "orta", "çok", "aşırı"], index=["hareketsiz", "az", "orta", "çok", "aşırı"].index(user["activity_level"] or "az"))
         goal = st.selectbox("Hedefin", ["kilo ver", "koru", "kilo al"], index=["kilo ver", "koru", "kilo al"].index(user["goal"] or "kilo ver"))
+        st.divider()
+        st.write("**🔐 Hesap Bilgilerini Değiştir**")
+        st.caption("Sadece değiştirmek istediğiniz alanı doldurun, diğerlerini boş bırakın.")
         
+        col_user, col_pass = st.columns(2)
+        with col_user:
+            yeni_kullanici_adi = st.text_input("Yeni Kullanıcı Adı", value="", help="Küçük harf ve rakam kullanın.")
+        with col_pass:
+            yeni_sifre = st.text_input("Yeni Şifre", type="password", value="", help="En az 4 karakter.")
         submitted = st.form_submit_button("Değişiklikleri Kaydet", type="primary")
 
     if submitted:
-        # 1. İsmi güncelle
         if yeni_isim.strip() and yeni_isim.strip() != user['display_name']:
             meal_mod.update_display_name(user["id"], yeni_isim.strip())
             st.session_state.user["display_name"] = yeni_isim.strip()
             user["display_name"] = yeni_isim.strip()
             
-        # 2. Kalori hedefini ve diğer bilgileri güncelle
         target = calorie_target(weight, height, age, gender, activity, goal)
         auth.update_profile(
             user["id"], age=age, gender=gender, height_cm=height, weight_kg=weight,
@@ -209,27 +286,55 @@ def show_profile_setup(user):
         
         st.session_state.show_profile = False
         st.success(f"Profiliniz başarıyla güncellendi! Günlük hedef: {target} kcal")
+        # Kullanıcı adı ve şifre güncellemesi
+        if yeni_kullanici_adi or yeni_sifre:
+            ok, msg = auth.update_credentials(user["id"], yeni_kullanici_adi, yeni_sifre)
+            if ok:
+                st.success(msg)
+                if yeni_kullanici_adi:
+                    st.session_state.user["username"] = yeni_kullanici_adi.strip().lower()
+                    cookies["username"] = yeni_kullanici_adi.strip().lower()
+                    cookies.save()
+            else:
+                st.error(msg)
         st.rerun()
 
 def show_home(user):
     # --- SOL MENÜ (SIDEBAR) ---
     with st.sidebar:
-        st.title(f"👋 {user['display_name']}")
-        st.caption(f"@{user['username']}")
+        bas_harfler = "".join([word[0].upper() for word in user['display_name'].split() if word])
+        if len(bas_harfler) > 2:
+            bas_harfler = bas_harfler[:2]
+            
+        st.markdown(f"""
+        <div style="text-align: center; padding: 15px 0;">
+            <div style="width: 70px; height: 70px; background-color: #007AFF; color: white; 
+                        border-radius: 50%; display: flex; align-items: center; 
+                        justify-content: center; font-size: 28px; font-weight: bold; 
+                        margin: 0 auto 10px auto; box-shadow: 0 4px 10px rgba(0,122,255,0.3);">
+                {bas_harfler}
+            </div>
+            <h3 style="margin: 0; color: #000000;">{user['display_name']}</h3>
+            <p style="color: #8E8E93; margin: 5px 0 0 0; font-size: 14px;">@{user['username']}</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
         st.divider()
         st.metric("🎯 Günlük Kalori Hedefi", f"{user['daily_calorie_target'] or '—'} kcal")
         st.divider()
         
-        # 1. Sık Kullanılan İşlemler
         if st.button("⚙️ Profili Düzenle", use_container_width=True):
             st.session_state.show_profile = True
             st.rerun()
             
         if st.button("🚪 Çıkış Yap", use_container_width=True):
+            # Çıkış yaparken çerezi temizle
+            if "username" in cookies:
+                del cookies["username"]
+                cookies.save()
             st.session_state.user = None
             st.rerun()
             
-        # 2. Tehlikeli Bölge (Gizli/Açılır Menü İçinde)
         st.divider()
         with st.expander("🛠️ Hesap ve Veri Yönetimi"):
             st.caption("Dikkat! Buradaki işlemler geri alınamaz.")
@@ -251,70 +356,20 @@ def show_home(user):
                 
                 if st.button("Hesabı Sil", type="primary", use_container_width=True, disabled=not onay):
                     meal_mod.delete_user_account(user["id"])
-                    st.session_state.user = None
-                    st.success("Hesabınız ve tüm verileriniz silindi.")
-                    st.rerun()
-  
-
-
-    # Eğer profil düzenleme modu açıksa, sadece profil ekranını göster ve çık
-    if st.session_state.show_profile:
-        show_profile_setup(user)
-        return
-def show_home(user):
-    # --- SOL MENÜ (SIDEBAR) ---
-    with st.sidebar:
-        st.title(f"👋 {user['display_name']}")
-        st.caption(f"@{user['username']}")
-        st.divider()
-        st.metric("🎯 Günlük Kalori Hedefi", f"{user['daily_calorie_target'] or '—'} kcal")
-        st.divider()
-        
-        # 1. Sık Kullanılan İşlemler
-        if st.button("⚙️ Profili Düzenle", use_container_width=True):
-            st.session_state.show_profile = True
-            st.rerun()
-            
-        if st.button("🚪 Çıkış Yap", use_container_width=True):
-            st.session_state.user = None
-            st.rerun()
-            
-        # 2. Tehlikeli Bölge (Gizli/Açılır Menü İçinde)
-        st.divider()
-        with st.expander("🛠️ Hesap ve Veri Yönetimi"):
-            st.caption("Dikkat! Buradaki işlemler geri alınamaz.")
-            
-            with st.expander("🗑️ Veri Temizleme"):
-                if st.button("Bugünkü Tüm Verileri Sil", use_container_width=True):
-                    meal_mod.clear_today_data(user["id"])
-                    st.success("Bugünkü veriler başarıyla silindi!")
-                    st.rerun()
-                    
-                if st.button("TÜM Geçmişi Sil", type="primary", use_container_width=True):
-                    meal_mod.clear_all_data(user["id"])
-                    st.warning("Tüm geçmiş verileriniz silindi! Hesabınız duruyor.")
-                    st.rerun()
-                    
-            with st.expander("⚠️ Hesabımı Sil"):
-                st.warning("Dikkat! Bu işlem geri alınamaz. Tüm verileriniz ve hesabınız kalıcı olarak silinir.")
-                onay = st.checkbox("Hesabımı kalıcı olarak silmek istiyorum.")
-                
-                if st.button("Hesabı Sil", type="primary", use_container_width=True, disabled=not onay):
-                    meal_mod.delete_user_account(user["id"])
+                    if "username" in cookies:
+                        del cookies["username"]
+                        cookies.save()
                     st.session_state.user = None
                     st.success("Hesabınız ve tüm verileriniz silindi.")
                     st.rerun()
 
-    # Eğer profil düzenleme modu açıksa, sadece profil ekranını göster ve çık
     if st.session_state.show_profile:
         show_profile_setup(user)
         return
 
-    # --- ANA SAYFA İÇERİĞİ ---
     # --- ANA SAYFA İÇERİĞİ ---
     st.title("🥗 Bugünkü Özet")
     
-    # Karşılama mesajı varsa göster, yoksa hiçbir şey yazdırma (None hatasını çözer)
     if st.session_state.get("karsilama_mesaji"):
         st.success(st.session_state.karsilama_mesaji)
         del st.session_state.karsilama_mesaji
@@ -327,25 +382,26 @@ def show_home(user):
     net = summary["total_eaten"] - summary["total_burned"]
     remaining = target - net
 
-    # Üst Metrikler
     col1, col2, col3, col4 = st.columns(4)
     col1.metric("Alınan", f"{int(summary['total_eaten'])} kcal")
     col2.metric("Yakılan", f"{int(summary['total_burned'])} kcal")
-        # Kalan kalori 700'ün altındaysa uyarı ver (kırmızı renk)
+    
     if remaining < 700:
         col3.metric("⚠️ Kalan (Açık Azalıyor!)", f"{int(remaining)} kcal", delta="Hedefin altında!", delta_color="inverse")
     else:
         col3.metric("Kalan", f"{int(remaining)} kcal")
+        
     col4.metric("Su", f"{water_ml} ml")
+    
     if target > 0:
         st.progress(max(0.0, min(1.0, net / target)), text=f"Kalori Hedefi: %{int((net/target)*100)}")
 
     st.divider()
+    
     tab_ai, tab_meal, tab_water, tab_act, tab_weight, tab_measure, tab_chart = st.tabs(
         ["📸 Fotoğraftan Ekle", "🍽️ Yemekler", "💧 Su", "🏃 Aktiviteler", "⚖️ Kilo", "📏 Ölçüler", "📊 Raporlar"]
     )
 
-   
     # --- 0. FOTOĞRAFTAN EKLE ---
     with tab_ai:
         st.subheader("📸 Yemek Fotoğrafından Kalori Tahmini")
@@ -353,7 +409,7 @@ def show_home(user):
         
         uploaded = st.file_uploader("Fotoğraf seç", type=["jpg", "jpeg", "png", "webp"], key="food_photo")
         
-            if uploaded is not None:
+        if uploaded is not None:
             st.image(uploaded, caption="Yüklenen fotoğraf", width="stretch")
             if st.button("🔍 Analiz Et", type="primary"):
                 with st.spinner("Analiz ediliyor..."):
@@ -363,7 +419,6 @@ def show_home(user):
                         st.session_state.ai_result = result
                     except Exception as e:
                         st.session_state.ai_result = {"error": f"Hata: {e}"}
-                        st.error(f"Analiz sırasında bir hata oluştu: {e}")
         
         result = st.session_state.get("ai_result")
         if result:
@@ -399,17 +454,39 @@ def show_home(user):
         if summary["meals"]:
             for m in summary["meals"]:
                 c1, c2 = st.columns([5, 1])
-                c1.write(f"**{m['food_name']}** — {int(m['calories'])} kcal")
+                emoji = "🍽️"
+                if m['meal_type'] == "Kahvaltı": emoji = "🍳"
+                elif m['meal_type'] == "Öğle": emoji = "🍲"
+                elif m['meal_type'] == "Akşam": emoji = "🍽️"
+                elif m['meal_type'] == "Ara Öğün": emoji = "🍎"
+                
+                c1.write(f"{emoji} **{m['food_name']}** — {int(m['calories'])} kcal")
                 if c2.button("🗑️", key=f"del_meal_{m['id']}"):
                     meal_mod.delete_meal(m["id"])
                     st.rerun()
         else:
             st.info("Henüz yemek eklenmedi.")
 
+        # --- KENDİ YEMEKLERİNİ YÖNETME KISMI ---
+        st.divider()
+        st.write("**⭐ Kendi Kayıtlı Yemeklerin**")
+        
+        ozel_yemekler = meal_mod.get_custom_foods(user["id"])
+        
+        if ozel_yemekler:
+            for ozel in ozel_yemekler:
+                c1, c2 = st.columns([5, 1])
+                c1.write(f"**{ozel['name']}** — {int(ozel['calories'])} kcal")
+                if c2.button("🗑️", key=f"del_custom_{ozel['id']}"):
+                    meal_mod.delete_custom_food(ozel["id"])
+                    st.success(f"{ozel['name']} listenden silindi!")
+                    st.rerun()
+        else:
+            st.info("Henüz kendi listene yemek kaydetmedin.")
+
         st.divider()
         st.write("**Yeni Yemek Ekle**")
         
-        # Hazır yemekler ve kendi yemeklerini birleştir
         tum_yemekler = get_combined_foods(user["id"])
         yemek_secimi = st.selectbox("Hazır Yemekler", ["Kendim Gireceğim"] + list(tum_yemekler.keys()))
         
@@ -451,9 +528,8 @@ def show_home(user):
     with tab_water:
         st.subheader("💧 Su Tüketimi")
         
-        # YENİ EKLENEN KISIM: Su içmeyi unuttuysa uyarı ver
         if water_ml == 0:
-            st.toast("💧 Bugün henüz su içmedin! Hadi bir bardak iç.", icon="🚨")
+            st.warning("💧 **Bugün henüz su içmedin!** Sağlığın için bir bardak su içmeyi unutma. 🚰")
         
         st.write(f"Bugün toplam **{water_ml} ml** su içtiniz. (Hedef: ~2000 ml)")
         
@@ -462,22 +538,32 @@ def show_home(user):
         
         st.divider()
         st.write("**Hızlı Ekle**")
-        c1, c2, c3, c4 = st.columns(4)
-        if c1.button("🥛 1 Bardak (200ml)"):
+        
+        col1, col2 = st.columns(2)
+        if col1.button("🥛 1 Bardak (200ml)", use_container_width=True):
             meal_mod.add_water(user["id"], 200)
             st.rerun()
-        if c2.button("🍵 Büyük Bardak (300ml)"):
+        if col2.button("🍵 Büyük Bardak (300ml)", use_container_width=True):
             meal_mod.add_water(user["id"], 300)
             st.rerun()
-        if c3.button("🥤 Şişe (500ml)"):
+            
+        col3, col4 = st.columns(2)
+        if col3.button("🥤 Şişe (500ml)", use_container_width=True):
             meal_mod.add_water(user["id"], 500)
             st.rerun()
-        if c4.button("🚰 1 Litre"):
+        if col4.button("🚰 1 Litre", use_container_width=True):
             meal_mod.add_water(user["id"], 1000)
             st.rerun()
-        if st.button("↩️ Son Eklenen 1 Bardağı Geri Al (200ml)"):
+            
+        st.divider()
+        
+        if st.button("↩️ Son Eklenen 1 Bardağı Geri Al (200ml)", use_container_width=True):
             meal_mod.remove_water(user["id"], 200)
             st.rerun()
+
+        if water_ml >= 2000 and "konfeti_gosterildi" not in st.session_state:
+            st.balloons()
+            st.session_state.konfeti_gosterildi = True
 
     # --- 3. AKTİVİTE ---
     with tab_act:
@@ -485,7 +571,15 @@ def show_home(user):
         if summary["activities"]:
             for a in summary["activities"]:
                 c1, c2 = st.columns([5, 1])
-                c1.write(f"**{a['activity_name']}** — {a['duration_min']} dk, {int(a['calories_burned'])} kcal")
+                act_emoji = "🏃"
+                if "Yürüyüş" in a['activity_name']: act_emoji = "🚶"
+                elif "Koşu" in a['activity_name']: act_emoji = "🏃‍♂️"
+                elif "Bisiklet" in a['activity_name']: act_emoji = "🚴"
+                elif "Yüzme" in a['activity_name']: act_emoji = "🏊"
+                elif "Ağırlık" in a['activity_name']: act_emoji = "💪"
+                elif "Pilates" in a['activity_name'] or "Yoga" in a['activity_name']: act_emoji = "🧘"
+                
+                c1.write(f"{act_emoji} **{a['activity_name']}** — {a['duration_min']} dk, {int(a['calories_burned'])} kcal")
                 if c2.button("🗑️", key=f"del_act_{a['id']}"):
                     meal_mod.delete_activity(a["id"])
                     st.rerun()
@@ -503,202 +597,20 @@ def show_home(user):
             burn = weight * duration * meal_mod.ACTIVITY_BURN_PER_KG_PER_MIN[activity_name]
             meal_mod.add_activity(user["id"], activity_name, duration, burn)
             st.rerun()
-        # --- 5. VÜCUT ÖLÇÜLERİ ---
-    with tab_measure:
-        st.subheader("📏 Vücut Ölçüleri")
-        st.caption("Bel, göğüs, kalça gibi ölçülerinizi kaydedin. Değişimi görmek motivasyonunuzu artıracaktır.")
-        
-        measurements = meal_mod.get_measurements(user["id"])
-        
-        if measurements:
-            st.write("**Geçmiş Ölçüleriniz**")
-            # Tablo yerine basit bir liste göster (asla hata vermez)
-            for m in measurements:
-                st.write(f"📅 {m['date']} — Bel: {m['waist']} cm, Göğüs: {m['chest']} cm, Kalça: {m['hips']} cm")
-            
-            # Son ölçüleri metrik olarak göster
-            son = measurements[-1]
-            c1, c2, c3, c4, c5, c6 = st.columns(6)
-            c1.metric("Bel", f"{son['waist']} cm" if son['waist'] else "-")
-            c2.metric("Göğüs", f"{son['chest']} cm" if son['chest'] else "-")
-            c3.metric("Kalça", f"{son['hips']} cm" if son['hips'] else "-")
-            c4.metric("Kol", f"{son['biceps']} cm" if son['biceps'] else "-")
-            c5.metric("Bacak", f"{son['thigh']} cm" if son['thigh'] else "-")
-            c6.metric("Boyun", f"{son['neck']} cm" if son['neck'] else "-")
-        else:
-            st.info("Henüz ölçü kaydı yok. Aşağıdan ilk ölçülerinizi ekleyebilirsiniz.")
-        
-        st.divider()
-        st.write("**Yeni Ölçü Kaydı Ekle**")
-        
-        with st.form("measure_form", clear_on_submit=True):
-            m_date = st.date_input("Tarih", value=date.today())
-            c1, c2, c3 = st.columns(3)
-            neck = c1.number_input("Boyun (cm)", 0.0, 100.0, 0.0, 0.5)
-            chest = c2.number_input("Göğüs (cm)", 0.0, 200.0, 0.0, 0.5)
-            waist = c3.number_input("Bel (cm)", 0.0, 200.0, 0.0, 0.5)
-            
-            c4, c5, c6 = st.columns(3)
-            hips = c4.number_input("Kalça (cm)", 0.0, 200.0, 0.0, 0.5)
-            biceps = c5.number_input("Kol (cm)", 0.0, 100.0, 0.0, 0.5)
-            thigh = c6.number_input("Bacak (cm)", 0.0, 150.0, 0.0, 0.5)
-            
-            submitted = st.form_submit_button("Kaydet", type="primary")
-            
-        if submitted:
-            meal_mod.add_measurement(user["id"], str(m_date), neck, chest, waist, hips, biceps, thigh)
-            st.success("Ölçüleriniz kaydedildi!")
-            st.rerun()
-        # --- 4. KİLO ---
+
+    # --- 4. KİLO ---
     with tab_weight:
         st.subheader("⚖️ Kilo Takibi")
         
-        # Mevcut kilo istatistiklerini al
         stats = meal_mod.get_weight_stats(user["id"])
         
         if stats:
-            # Üst metrikler
             c1, c2, c3 = st.columns(3)
             c1.metric("Başlangıç Kilosu", f"{stats['ilk_kilo']} kg")
             c2.metric("Son Kilo", f"{stats['son_kilo']} kg")
             
-            # Farkı göster (eksi ise yeşil, artı ise kırmızı)
             fark = stats['fark']
             if fark < 0:
                 c3.metric("Toplam Değişim", f"{fark:.1f} kg", delta=f"{fark:.1f} kg (Tebrikler! 🎉)", delta_color="normal")
             elif fark > 0:
-                c3.metric("Toplam Değişim", f"{fark:.1f} kg", delta=f"+{fark:.1f} kg", delta_color="inverse")
-            else:
-                c3.metric("Toplam Değişim", "0.0 kg")
-                
-            # Grafik
-            st.write("**Kilo Değişim Grafiği**")
-            st.line_chart({"Kilo (kg)": {r["date"]: r["weight_kg"] for r in stats['gecmis']}})
-            
-        else:
-            st.info("Henüz kilo kaydı yok. Aşağıdan ilk kilonu ekleyebilirsin.")
-        
-        st.divider()
-        st.write("**Yeni Kilo Kaydı Ekle**")
-        
-        with st.form("weight_form", clear_on_submit=True):
-            w_date = st.date_input("Tarih", value=date.today())
-            w_kg = st.number_input("Kilo (kg)", 30.0, 250.0, float(user["weight_kg"] or 70.0), 0.1)
-            submitted = st.form_submit_button("Kaydet")
-            
-        if submitted:
-            meal_mod.add_weight(user["id"], w_kg, w_date)
-            st.success(f"{w_date} için {w_kg} kg kaydedildi.")
-            st.rerun()
-
-           # --- 5. RAPORLAR ---
-    with tab_chart:
-        st.subheader("📊 Analiz ve Raporlar")
-        
-        rapor_tipi = st.radio("Rapor Tipi", ["Son 7 Gün", "Aylık Rapor"], horizontal=True)
-        
-        if rapor_tipi == "Son 7 Gün":
-            data = meal_mod.get_last_7_days(user["id"])
-            labels = [d["date"].strftime("%d.%m") for d in data]
-            
-            total_eaten = sum(d["eaten"] for d in data)
-            total_burned = sum(d["burned"] for d in data)
-            
-            c1, c2 = st.columns(2)
-            c1.metric("Ortalama Alınan", f"{int(total_eaten/7)} kcal/gün")
-            c2.metric("Ortalama Yakılan", f"{int(total_burned/7)} kcal/gün")
-            
-            st.write("**Günlük Kalori Akışı**")
-            st.bar_chart({
-                "Alınan": {l: d["eaten"] for l, d in zip(labels, data)},
-                "Yakılan": {l: d["burned"] for l, d in zip(labels, data)},
-            })
-            
-
-        # --- HAFTALIK KALORİ AÇIĞI ---
-        st.divider()
-        st.write("**🔥 Haftalık Kalori Açığı**")
-        
-        haftalik_veri = meal_mod.get_last_7_days(user["id"])
-        haftalik_alinan = sum(d["eaten"] for d in haftalik_veri)
-        haftalik_yakilan = sum(d["burned"] for d in haftalik_veri)
-        haftalik_hedef = target * 7
-        
-        # Açık = Alınan - (Hedef + Yakılan)
-        haftalik_acik = haftalik_alinan - (haftalik_hedef + haftalik_yakilan)
-        
-        if haftalik_acik <= 0:
-            st.success(f"**Tebrikler!** Bu hafta toplam **{abs(int(haftalik_acik))} kcal** açık verdin. Harika gidiyorsun! 💪")
-        else:
-            st.error(f"**Dikkat!** Bu hafta toplam **{int(haftalik_acik)} kcal** fazla aldın. Hedefine odaklan! 🎯")
-
-        # --- GÜNLÜK ORTALAMA MAKRO BESİNLER (SON 7 GÜN) ---
-        st.divider()
-        st.write("**Günlük Ortalama Makro Besinler**")
-        macro = meal_mod.get_macro_summary_last_7_days(user["id"])
-        
-        mc1, mc2, mc3 = st.columns(3)
-        mc1.metric("Protein", f"{int(macro['protein'])} g/gün")
-        mc2.metric("Karbonhidrat", f"{int(macro['carbs'])} g/gün")
-        mc3.metric("Yağ", f"{int(macro['fat'])} g/gün")
-        
-        # Makro grafiği
-        st.bar_chart({
-            "Miktar (g)": {
-                "Protein": macro["protein"],
-                "Karbonhidrat": macro["carbs"],
-                "Yağ": macro["fat"]
-            }
-        })
-            
-    else:  # <-- BU ELSE, "Son 7 Gün" ve "Aylık Rapor" SEÇİMİ İÇİN
-        st.write("**Geçmiş Ayları İncele**")
-        # ... (Aylık rapor kısmı buradan sonra aynen devam edecek)
-                
-             # --- VÜCUT ÖLÇÜLERİ GRAFİĞİ ---
-        st.divider()
-        st.write("**📏 Vücut Ölçüleri Değişimi (Son 6 Ay)**")
-        
-        # Son 6 ayın verilerini çek (basitçe tüm ölçüleri alıp son 6 ayı filtreleyelim)
-        import datetime
-        today = date.today()
-        alti_ay_once = today - datetime.timedelta(days=180)
-        
-        olcu_data = meal_mod.get_measurements_for_chart(user["id"])
-        
-        if olcu_data:
-            # Son 6 aya ait olanları filtrele
-            filtered = [r for r in olcu_data if r["date"] >= str(alti_ay_once)]
-            
-            if filtered:
-                # Grafik için sözlük oluştur
-                chart_data = {
-                    "Bel (cm)": {r["date"]: r["waist"] for r in filtered if r["waist"]},
-                    "Göğüs (cm)": {r["date"]: r["chest"] for r in filtered if r["chest"]},
-                    "Kalça (cm)": {r["date"]: r["hips"] for r in filtered if r["hips"]},
-                    "Kol (cm)": {r["date"]: r["biceps"] for r in filtered if r["biceps"]},
-                }
-                st.line_chart(chart_data)
-            else:
-                st.info("Son 6 ayda kaydedilmiş ölçü bulunmuyor.")
-        else:
-            st.info("Henüz hiç ölçü kaydı yok. '📏 Ölçüler' sekmesinden ekleyebilirsiniz.")
-
-    # --- ALT BİLGİ (FOOTER) ---
-    st.markdown("---")
-    st.markdown(
-        """
-        <div style='text-align: center; color: #8E8E93; font-size: 12px; padding-bottom: 20px;'>
-            🥗 <b>KCTFit</b> | Geliştirici: <b>Kerim Çağatay Toklu</b> (@kct)
-        </div>
-        """, 
-        unsafe_allow_html=True
-    )
-# Ana akış
-user = st.session_state.user
-if user is None:
-    show_login_page()
-elif not user.get("daily_calorie_target"):
-    show_profile_setup(user)
-else:
-    show_home(user)
+                c3.metric("Top
