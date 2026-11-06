@@ -144,22 +144,23 @@ st.markdown("""
         padding-top: 2rem !important;
         max-width: 100% !important;
     }
-    /* --- KARANLIK MOD İÇİN METRİK KARTLARI --- */
+        /* --- KARANLIK MOD KESİN ÇÖZÜM --- */
     @media (prefers-color-scheme: dark) {
-        /* Tüm metrik kartlarının arka planını koyu gri yap */
-        div[data-testid="stMetric"] {
+        /* Tüm metrik kutularının arka planını koyu gri yap (diğer renkleri ezer) */
+        div[data-testid="stHorizontalBlock"] > div div[data-testid="stMetric"] {
             background-color: #1C1C1E !important;
             border: 1px solid #3A3A3C !important;
+            box-shadow: none !important;
         }
         
-        /* Kart içindeki etiketleri (Alınan, Yakılan vb.) açık gri yap */
-        div[data-testid="stMetricLabel"] {
-            color: #A1A1A6 !important;
-        }
-        
-        /* Kart içindeki rakamları bembeyaz yap */
-        div[data-testid="stMetricValue"] {
+        /* Kutuların içindeki rakamları (650 kcal vs.) bembeyaz yap */
+        div[data-testid="stHorizontalBlock"] > div div[data-testid="stMetricValue"] {
             color: #FFFFFF !important;
+        }
+        
+        /* Kutuların içindeki etiketleri (Alınan, Yakılan vs.) açık gri yap */
+        div[data-testid="stHorizontalBlock"] > div div[data-testid="stMetricLabel"] {
+            color: #A1A1A6 !important;
         }
     }
 </style>
