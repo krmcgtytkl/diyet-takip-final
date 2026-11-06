@@ -275,3 +275,20 @@ def delete_custom_food(food_id):
         supabase.table("custom_foods").delete().eq("id", food_id).execute()
     except Exception as e:
         print(f"Özel yemek silme hatası: {e}")
+def get_this_week_summary(user_id):
+    """Pazartesi'den bugüne kadar olan kalori özetini döndürür."""
+    from datetime import date, timedelta
+    today = date.today()
+    start_of_week = today - timedelta(days=today.weekday())
+    
+    try:
+        res = supabase.table("meal_entries").select("calories").eq("user_id", user_id).gte("date", str(start_of_week)).lte("date", str(today)).execute()
+        eaten = sum(m["calories"] for m in res.data) if res.data else 0
+        
+        res_act = supabase.table("activity_entries").select("calories_burned").eq("user_id", user_id).gte("date", str(start_of_week)).lte("date", str(today)).execute()
+        burned = sum(a["calories_burned"] for a in res_act.data) if res_act.data else 0
+        
+        return {"eaten": eaten, "burned": burned, "days_passed": today.weekday() + 1}
+    except Exception as e:
+        print(f"Haftalık özet hatası: {e}")
+        return {"eaten": 0, "burned": 0, "days_passed": 1}
