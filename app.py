@@ -376,12 +376,44 @@ def show_home(user):
 
     st.divider()
     
-    tab_ai, tab_meal, tab_water, tab_act, tab_weight, tab_measure, tab_chart = st.tabs(
-        ["📸 Fotoğraftan Ekle", "🍽️ Yemekler", "💧 Su", "🏃 Aktiviteler", "⚖️ Kilo", "📏 Ölçüler", "📊 Raporlar"]
-    )
+    # --- BUTONLU MENÜ (3x2 + 1 Düzeni) ---
+    if "aktif_sekme" not in st.session_state:
+        st.session_state.aktif_sekme = "ai"
+
+    # 1. Satır (3 Buton)
+    col1, col2, col3 = st.columns(3)
+    if col1.button("📸\nFotoğraf", use_container_width=True, type="primary" if st.session_state.aktif_sekme == "ai" else "secondary"):
+        st.session_state.aktif_sekme = "ai"
+        st.rerun()
+    if col2.button("🍽️\nYemekler", use_container_width=True, type="primary" if st.session_state.aktif_sekme == "meal" else "secondary"):
+        st.session_state.aktif_sekme = "meal"
+        st.rerun()
+    if col3.button("💧\nSu", use_container_width=True, type="primary" if st.session_state.aktif_sekme == "water" else "secondary"):
+        st.session_state.aktif_sekme = "water"
+        st.rerun()
+
+    # 2. Satır (3 Buton)
+    col4, col5, col6 = st.columns(3)
+    if col4.button("🏃\nAktivite", use_container_width=True, type="primary" if st.session_state.aktif_sekme == "act" else "secondary"):
+        st.session_state.aktif_sekme = "act"
+        st.rerun()
+    if col5.button("⚖️\nKilo", use_container_width=True, type="primary" if st.session_state.aktif_sekme == "weight" else "secondary"):
+        st.session_state.aktif_sekme = "weight"
+        st.rerun()
+    if col6.button("📏\nÖlçüler", use_container_width=True, type="primary" if st.session_state.aktif_sekme == "measure" else "secondary"):
+        st.session_state.aktif_sekme = "measure"
+        st.rerun()
+
+    # 3. Satır (1 Buton - Raporlar)
+    col7, col8, col9 = st.columns(3)
+    if col7.button("📊\nRaporlar", use_container_width=True, type="primary" if st.session_state.aktif_sekme == "chart" else "secondary"):
+        st.session_state.aktif_sekme = "chart"
+        st.rerun()
+
+    st.divider()
 
     # --- 0. FOTOĞRAFTAN EKLE ---
-    with tab_ai:
+    if st.session_state.aktif_sekme == "ai":
         st.subheader("📸 Yemek Fotoğrafından Kalori Tahmini")
         st.caption("Yemeğin fotoğrafını çek/yükle, yapay zeka tahmini yapsın.")
         
@@ -427,7 +459,7 @@ def show_home(user):
                     st.rerun()
 
     # --- 1. YEMEK EKLE ---
-    with tab_meal:
+    elif st.session_state.aktif_sekme == "meal":
         st.subheader("Bugün Yediklerim")
         if summary["meals"]:
             for m in summary["meals"]:
@@ -517,7 +549,7 @@ def show_home(user):
                 st.rerun()       
 
     # --- 2. SU TAKİBİ ---
-    with tab_water:
+    elif st.session_state.aktif_sekme == "water":
         st.subheader("💧 Su Tüketimi")
         
         if water_ml == 0:
@@ -558,7 +590,7 @@ def show_home(user):
             st.session_state.konfeti_gosterildi = True
 
     # --- 3. AKTİVİTE ---
-    with tab_act:
+    elif st.session_state.aktif_sekme == "act":
         st.subheader("Bugün Aktivitelerim")
         if summary["activities"]:
             for a in summary["activities"]:
@@ -591,7 +623,7 @@ def show_home(user):
             st.rerun()
 
     # --- 4. KİLO ---
-    with tab_weight:
+    elif st.session_state.aktif_sekme == "weight":
         st.subheader("⚖️ Kilo Takibi")
         
         stats = meal_mod.get_weight_stats(user["id"])
@@ -629,7 +661,7 @@ def show_home(user):
             st.rerun()
 
     # --- 5. VÜCUT ÖLÇÜLERİ ---
-    with tab_measure:
+    elif st.session_state.aktif_sekme == "measure":
         st.subheader("📏 Vücut Ölçüleri")
         st.caption("Bel, göğüs, kalça gibi ölçülerinizi kaydedin. Değişimi görmek motivasyonunuzu artıracaktır.")
         
@@ -674,7 +706,7 @@ def show_home(user):
             st.rerun()
 
     # --- 6. RAPORLAR ---
-    with tab_chart:
+    elif st.session_state.aktif_sekme == "chart":
         st.subheader("📊 Analiz ve Raporlar")
 
         # --- HAFTALIK ÖZET VE AÇIK KARTI ---
