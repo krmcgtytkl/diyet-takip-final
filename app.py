@@ -298,6 +298,7 @@ def show_profile_setup(user):
 def show_home(user):
     # --- SOL MENÜ (SIDEBAR) ---
     with st.sidebar:
+        # 1. Profil Avatarı
         bas_harfler = "".join([word[0].upper() for word in user['display_name'].split() if word])
         if len(bas_harfler) > 2:
             bas_harfler = bas_harfler[:2]
@@ -312,6 +313,16 @@ def show_home(user):
             </div>
             <h3 style="margin: 0; color: #000000;">{user['display_name']}</h3>
             <p style="color: #8E8E93; margin: 5px 0 0 0; font-size: 14px;">@{user['username']}</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # 2. Günlük Seri (Streak) Gösterimi
+        streak = meal_mod.update_streak(user["id"])
+        st.markdown(f"""
+        <div style="background-color: #FFF3E0; padding: 10px; border-radius: 10px; text-align: center; border: 1px solid #FFCC80; margin-top: 10px;">
+            <span style="font-size: 24px;">🔥</span><br>
+            <b style="color: #E65100; font-size: 18px;">{streak} Gün</b><br>
+            <small style="color: #E65100;">Üst üste giriş!</small>
         </div>
         """, unsafe_allow_html=True)
         
@@ -355,7 +366,6 @@ def show_home(user):
     if st.session_state.show_profile:
         show_profile_setup(user)
         return
-
     # --- ANA SAYFA İÇERİĞİ ---
     st.title("🥗 Bugünkü Özet")
     
