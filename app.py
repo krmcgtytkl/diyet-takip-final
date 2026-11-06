@@ -116,24 +116,32 @@ st.markdown("""
         display: none;
     }
 
-    /* --- KARANLIK MOD İÇİN KESİN ÇÖZÜM --- */
+    /* --- KARANLIK MOD VE AÇIK MOD İÇİN KESİN ÇÖZÜM --- */
+    /* Önce varsayılan (açık tema) ayarları */
+    div[data-testid="stMetric"] {
+        background-color: #FFFFFF !important;
+        border: 1px solid #E5E5EA !important;
+    }
+    div[data-testid="stMetricLabel"] {
+        color: #555555 !important; 
+    }
+    div[data-testid="stMetricValue"] {
+        color: #000000 !important; 
+    }
+
+    /* Karanlık moda geçildiğinde bu ayarlar geçerli olsun */
     @media (prefers-color-scheme: dark) {
-        /* Tüm metrik kartlarını koyu gri yap */
         div[data-testid="stMetric"] {
             background-color: #1C1C1E !important;
             border: 1px solid #3A3A3C !important;
         }
-        
-        /* Kart içindeki rakamları (650 kcal vs.) bembeyaz yap */
-        div[data-testid="stMetricValue"] {
-            color: #FFFFFF !important;
-        }
-        
-        /* Kart içindeki etiketleri (Alınan, Yakılan vb.) açık gri yap */
         div[data-testid="stMetricLabel"] {
-            color: #A1A1A6 !important;
+            color: #A1A1A6 !important; /* Etiketler açık gri */
         }
-    }
+        div[data-testid="stMetricValue"] {
+            color: #FFFFFF !important; /* Rakamlar beyaz */
+        }
+    } 
 </style>
 """, unsafe_allow_html=True)
 
