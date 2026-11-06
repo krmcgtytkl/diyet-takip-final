@@ -608,9 +608,12 @@ def show_home(user):
             c1, c2, c3 = st.columns(3)
             c1.metric("Başlangıç Kilosu", f"{stats['ilk_kilo']} kg")
             c2.metric("Son Kilo", f"{stats['son_kilo']} kg")
-            
+
             fark = stats['fark']
+
             if fark < 0:
                 c3.metric("Toplam Değişim", f"{fark:.1f} kg", delta=f"{fark:.1f} kg (Tebrikler! 🎉)", delta_color="normal")
             elif fark > 0:
-                c3.metric("Top
+                c3.metric("Toplam Değişim", f"{fark:.1f} kg", delta=f"+{fark:.1f} kg", delta_color="inverse")
+            else:
+                c3.metric("Toplam Değişim", "0.0 kg")
