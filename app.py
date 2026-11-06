@@ -21,6 +21,7 @@ cookies = EncryptedCookieManager(
 )
 
 if not cookies.ready():
+    st.warning("Çerezler yükleniyor, lütfen bekleyin...")
     st.stop()
 
 # Session state başlangıç değerleri
