@@ -647,22 +647,26 @@ def show_home(user):
         st.subheader("📊 Analiz ve Raporlar")
 
         # --- HAFTALIK ÖZET VE AÇIK KARTI ---
-        haftalik_veri = meal_mod.get_last_7_days(user["id"])
-        toplam_alinan = sum(d["eaten"] for d in haftalik_veri)
-        toplam_yakilan = sum(d["burned"] for d in haftalik_veri)
         
-        haftalik_hedef = target * 7
+        # --- HAFTALIK ÖZET VE AÇIK KARTI (Pazartesi'den Bugüne) ---
+        haftalik_ozet = meal_mod.get_this_week_summary(user["id"])
+        toplam_alinan = haftalik_ozet["eaten"]
+        toplam_yakilan = haftalik_ozet["burned"]
+        gecen_gun = haftalik_ozet["days_passed"]
+        
+        haftalik_hedef = target * gecen_gun
         haftalik_acik = toplam_alinan - (haftalik_hedef + toplam_yakilan)
         
         if haftalik_acik <= 0:
-            acik_mesaji = f"🔥 **Harika!** Bu hafta **{abs(int(haftalik_acik))} kcal** açık verdin."
+            acik_mesaji = f"🔥 **Harika!** Bu hafta (Pazartesi'den bugüne) **{abs(int(haftalik_acik))} kcal** açık verdin."
         else:
             acik_mesaji = f"⚠️ **Dikkat!** Bu hafta **{int(haftalik_acik)} kcal** fazla aldın."
             
         st.info(f"""
-        🎉 **Bu Haftanın Özeti**
+        🎉 **Bu Haftanın Özeti (Pazartesi'den Bugüne)**
         
         Bu hafta toplam **{int(toplam_alinan)} kcal** aldın ve **{int(toplam_yakilan)} kcal** yaktın. 
+        ({gecen_gun} günlük veri)
         
         {acik_mesaji}
         """)
