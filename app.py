@@ -116,31 +116,34 @@ st.markdown("""
         display: none;
     }
 
-    /* --- KARANLIK MOD VE AÇIK MOD İÇİN KESİN ÇÖZÜM --- */
-    /* Önce varsayılan (açık tema) ayarları */
-    div[data-testid="stMetric"] {
-        background-color: #FFFFFF !important;
-        border: 1px solid #E5E5EA !important;
+        /* --- ÖZEL METRİK KART RENKLERİ (AÇIK TEMA) --- */
+    /* 1. Kart: Alınan (Turuncu) */
+    div[data-testid="stHorizontalBlock"] > div:nth-child(1) div[data-testid="stMetric"] {
+        background-color: #FFF3E0 !important; border: 1px solid #FFCC80 !important;
     }
-    div[data-testid="stMetricLabel"] {
-        color: #555555 !important; 
-    }
-    div[data-testid="stMetricValue"] {
-        color: #000000 !important; 
-    }
+    div[data-testid="stHorizontalBlock"] > div:nth-child(1) div[data-testid="stMetricValue"] { color: #E65100 !important; }
+    div[data-testid="stHorizontalBlock"] > div:nth-child(1) div[data-testid="stMetricLabel"] { color: #E65100 !important; }
 
-    /* Karanlık moda geçildiğinde bu ayarlar geçerli olsun */
-    @media (prefers-color-scheme: dark) {
-        div[data-testid="stMetric"] {
-            background-color: #1C1C1E !important;
-            border: 1px solid #3A3A3C !important;
-        }
-        div[data-testid="stMetricLabel"] {
-            color: #A1A1A6 !important; /* Etiketler açık gri */
-        }
-        div[data-testid="stMetricValue"] {
-            color: #FFFFFF !important; /* Rakamlar beyaz */
-        }
+    /* 2. Kart: Yakılan (Yeşil) */
+    div[data-testid="stHorizontalBlock"] > div:nth-child(2) div[data-testid="stMetric"] {
+        background-color: #E8F5E9 !important; border: 1px solid #A5D6A7 !important;
+    }
+    div[data-testid="stHorizontalBlock"] > div:nth-child(2) div[data-testid="stMetricValue"] { color: #1B5E20 !important; }
+    div[data-testid="stHorizontalBlock"] > div:nth-child(2) div[data-testid="stMetricLabel"] { color: #1B5E20 !important; }
+
+    /* 3. Kart: Kalan (Mor) */
+    div[data-testid="stHorizontalBlock"] > div:nth-child(3) div[data-testid="stMetric"] {
+        background-color: #F3E5F5 !important; border: 1px solid #CE93D8 !important;
+    }
+    div[data-testid="stHorizontalBlock"] > div:nth-child(3) div[data-testid="stMetricValue"] { color: #6A1B9A !important; }
+    div[data-testid="stHorizontalBlock"] > div:nth-child(3) div[data-testid="stMetricLabel"] { color: #6A1B9A !important; }
+
+    /* 4. Kart: Su (Mavi) */
+    div[data-testid="stHorizontalBlock"] > div:nth-child(4) div[data-testid="stMetric"] {
+        background-color: #E3F2FD !important; border: 1px solid #90CAF9 !important;
+    }
+    div[data-testid="stHorizontalBlock"] > div:nth-child(4) div[data-testid="stMetricValue"] { color: #0D47A1 !important; }
+    div[data-testid="stHorizontalBlock"] > div:nth-child(4) div[data-testid="stMetricLabel"] { color: #0D47A1 !important; }
     } 
 </style>
 """, unsafe_allow_html=True)
