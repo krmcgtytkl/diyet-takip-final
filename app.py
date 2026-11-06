@@ -353,7 +353,7 @@ def show_home(user):
         
         uploaded = st.file_uploader("Fotoğraf seç", type=["jpg", "jpeg", "png", "webp"], key="food_photo")
         
-                if uploaded is not None:
+            if uploaded is not None:
             st.image(uploaded, caption="Yüklenen fotoğraf", width="stretch")
             if st.button("🔍 Analiz Et", type="primary"):
                 with st.spinner("Analiz ediliyor..."):
