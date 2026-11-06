@@ -14,14 +14,17 @@ import os
 # --- SAYFA AYARLARI VE HAFIZA ---
 st.set_page_config(page_title="KCTFIT", page_icon="🥗", layout="wide")
 
-# Çerez yöneticisini başlat (oturum kalıcılığı için)
+from streamlit_cookies_manager import EncryptedCookieManager
+import os
+
 cookies = EncryptedCookieManager(
     prefix="kctfit/",
     password=os.environ.get("COOKIES_PASSWORD", "KCTFIT-Gizli-Sifre-123")
 )
 
+# Çerezlerin yüklenmesini bekle (ama sonsuza kadar değil)
 if not cookies.ready():
-    st.warning("Çerezler yükleniyor, lütfen bekleyin...")
+    st.info("Oturum bilgileri yükleniyor...")
     st.stop()
 
 # Session state başlangıç değerleri
